@@ -1,3 +1,5 @@
+pip install pyyaml
+
 clash=$(
     curl -s 'https://api.github.com/repos/Dreamacro/clash/releases/tags/premium' | \
     python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64') > -1]; print(src['name'].split(' ')[1] + ';' + urls[0])"
