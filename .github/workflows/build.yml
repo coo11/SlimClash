@@ -52,7 +52,7 @@ jobs:
           echo 'RELEASE_DESC<<EOF' >> $GITHUB_ENV
           echo "$RELEASE_DESC" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          #echo "RF=$RELEASE_FILENAME" >> $GITHUB_ENV
+          echo "RF=$RELEASE_FILENAME" >> $GITHUB_ENV
       - name: Update Release
         uses: andelf/nightly-release@main
         env:
