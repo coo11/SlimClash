@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/coo11/SlimClash/raw/master/src/logo.png" alt="SlimClash" width="200">
+  <img src="https://github.com/coo11/SlimClash/raw/main/src/logo.png" alt="SlimClash" width="200">
   <br>SlimClash<br>
 </h1>
 
