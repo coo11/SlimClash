@@ -60,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: weeklybuild
-          prerelease: true
+          prerelease: false
           name: SlimClash
-          files: ${{ env.RELEASE_FILENAME }}
+          files: $env.RELEASE_FILENAME
