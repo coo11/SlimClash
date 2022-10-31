@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+      #- uses: actions/setup-python@v4
+      #  with:
+     #     python-version: '3.11'
+      #    cache: 'pip'
       - name: Build
         run: |
-          build.sh
+          ./build.sh
       - name: Update Release
         uses: andelf/nightly-release@main
         env:
