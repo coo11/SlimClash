@@ -43,7 +43,7 @@ jobs:
           cp src/icon.ico SlimClash/clash.ico
           
           7z a -mm=Deflate -mfb=258 -mpass=15 -r ${RELEASE_FILENAME} SlimClash/
-          RELEASE_DESC="## Base on Clash Premium ${release_mark}
+          RELEASE_DESC="## Based on Clash Premium ${release_mark}
           ### Related Link
           [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
           [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
@@ -63,4 +63,5 @@ jobs:
           prerelease: true
           name: SlimClash
           body: ${{ env.RELEASE_DESC }}
-          files: ${{ env.RELEASE_FILENAME }}
+          files: SlimClash_2022.08.26.zip
+          #files: ${ env.RELEASE_FILENAME }
