@@ -48,7 +48,11 @@ jobs:
           [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
           [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
           [GeoIP2 · CN](https://github.com/Hackl0us/GeoIP2-CN)"
-
+          
+          #echo 'RELEASE_DESC<<EOF' >> $GITHUB_ENV
+          #echo "$RELEASE_DESC" >> $GITHUB_ENV
+          #echo 'EOF' >> $GITHUB_ENV
+          echo $RELEASE_FILENAME >> $GITHUB_ENV
           ls
       - name: Update Release
         uses: andelf/nightly-release@main
@@ -58,4 +62,4 @@ jobs:
           tag_name: weeklybuild
           prerelease: true
           name: SlimClash
-          files: SlimClash_2022.08.26.zip
+          files: ${{ env.RELEASE_FILENAME }}
