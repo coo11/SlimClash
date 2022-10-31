@@ -53,7 +53,7 @@ jobs:
           echo "$RELEASE_DESC" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           echo $RELEASE_FILENAME >> $GITHUB_ENV
-          echo 123
+          ls
       - name: Update Release
         uses: andelf/nightly-release@main
         env:
@@ -62,6 +62,6 @@ jobs:
           tag_name: weeklybuild
           prerelease: true
           name: SlimClash
-          body: ${{ env.RELEASE_DESC }}
+          #body: ${{ env.RELEASE_DESC }}
           files: SlimClash_2022.08.26.zip
           #files: ${ env.RELEASE_FILENAME }
