@@ -1,0 +1,209 @@
+rules:
+  # EHentai
+  # https://ehwiki.org/wiki/IPs#Table
+  - DOMAIN,e-hentai.org,PROXY
+  - DOMAIN,api.e-hentai.org,PROXY
+  - DOMAIN,forums.e-hentai.org,PROXY
+  - DOMAIN,g.e-hentai.org,PROXY
+  - DOMAIN,lofi.e-hentai.org,PROXY
+  - DOMAIN,r.e-hentai.org,PROXY
+  - DOMAIN,repo.e-hentai.org,PROXY
+  - DOMAIN,ul.e-hentai.org,PROXY
+  - DOMAIN,upload.e-hentai.org,PROXY
+  # - DOMAIN,ehgt.org,PROXY
+  # - DOMAIN,xml.ehgt.org,PROXY
+  - DOMAIN,ul.ehgt.org,PROXY
+  # - DOMAIN,ehtracker.org,PROXY
+  # - DOMAIN,1.ehtracker.org,PROXY
+  # - DOMAIN,a.ehtracker.org,PROXY
+  - DOMAIN,ehwiki.org,PROXY
+  # - DOMAIN,hentaiathome.net,PROXY
+  # - DOMAIN,rpc.hentaiathome.net,PROXY
+  # - DOMAIN,hentaiverse.org,PROXY
+  # - DOMAIN,alt.hentaiverse.org,PROXY
+  - DOMAIN,exhentai.org,PROXY
+  - DOMAIN-SUFFIX,hath.network,PROXY
+  
+  # Yandex
+  - DOMAIN-SUFFIX,ya.ru,PROXY
+  - DOMAIN-SUFFIX,yandex.com,PROXY
+  - DOMAIN-SUFFIX,yandex.net,PROXY
+  - DOMAIN-SUFFIX,yastatic.net,PROXY
+  - DOMAIN-SUFFIX,yandex.ru,PROXY
+  - DOMAIN,yandex-images.clstorage.net,PROXY
+  
+  # Booru
+  - DOMAIN-SUFFIX,gelbooru.com,PROXY
+  - DOMAIN-SUFFIX,donmai.us,PROXY
+  - DOMAIN-SUFFIX,yande.re,PROXY
+  - DOMAIN-SUFFIX,konachan.com,PROXY
+  - DOMAIN-SUFFIX,sankakucomplex.com,PROXY
+  - DOMAIN-SUFFIX,jads.co,DENIED
+  - DOMAIN-SUFFIX,adtrue.com,DENIED
+  - DOMAIN,cdn.anime-pictures.net,PROXY
+  - DOMAIN,e-shuushuu.net,PROXY
+  
+  # DeviantArt
+  - DOMAIN-SUFFIX,deviantart.net,PROXY
+  - DOMAIN-SUFFIX,deviantart.com,PROXY
+  - DOMAIN-SUFFIX,wixmp.com,PROXY
+  
+  # ACG
+  - DOMAIN-SUFFIX,178.com,DIRECT
+  - DOMAIN,mangadex.org,PROXY
+  - DOMAIN-SUFFIX,mangadex.network,PROXY
+  - DOMAIN-SUFFIX,wnacg.com,PROXY
+  - DOMAIN-SUFFIX,wnacg.org,PROXY
+  - DOMAIN-SUFFIX,wnacg.download,PROXY
+  # - DOMAIN-SUFFIX,moegirl.org,PROXY
+  # - DOMAIN-SUFFIX,moegirl.org.cn,PROXY
+  - DOMAIN-SUFFIX,hmoegirl.com,PROXY
+  - DOMAIN-SUFFIX,bgm.tv,PROXY
+  - DOMAIN-SUFFIX,south-plus.net,PROXY
+  - DOMAIN-SUFFIX,cangku.life,PROXY
+  - DOMAIN-SUFFIX,wani.com,PROXY
+  - DOMAIN-SUFFIX,fakku.net,PROXY
+  - DOMAIN-SUFFIX,iwara.tv,PROXY
+  - DOMAIN-SUFFIX,gamer.com.tw,PROXY
+  - DOMAIN-SUFFIX,bahamut.com.tw,PROXY
+  - DOMAIN-SUFFIX,nhentai.net,PROXY
+  - DOMAIN-SUFFIX,navirank.com,PROXY
+  - DOMAIN-SUFFIX,dm530.cc,PROXY
+  - DOMAIN-SUFFIX,cnpicacomic.com,PROXY
+  - DOMAIN-SUFFIX,konami.net,PROXY
+  - DOMAIN-SUFFIX,kemono.party,PROXY
+  ## Pixiv
+  - DOMAIN-SUFFIX,pixiv.net,PROXY
+  - DOMAIN,ads-pixiv.net,REJECT
+  - DOMAIN,pixiv.org,PROXY
+  - DOMAIN,i.pximg.net,PROXY
+  - DOMAIN,i-f.pximg.net,DIRECT
+  - DOMAIN,i-cf.pximg.net,PROXY
+  - DOMAIN-SUFFIX,pximg.net,PROXY
+  - DOMAIN-SUFFIX,fanbox.cc,PROXY
+  ## Niconico
+  - DOMAIN-SUFFIX,dmc.nico,PROXY
+  - DOMAIN-SUFFIX,nicovideo.jp,PROXY
+  - DOMAIN-SUFFIX,nimg.jp,PROXY
+  - DOMAIN-SUFFIX,socdm.com,PROXY
+  - DOMAIN-SUFFIX,nicodic.jp,PROXY
+  - DOMAIN-SUFFIX,nicomanga.jp,PROXY
+  - DOMAIN-SUFFIX,niconico.com,PROXY
+  - DOMAIN-SUFFIX,nicoseiga.jp,PROXY
+  - DOMAIN-SUFFIX,simg.jp,PROXY
+
+  # Image Host
+  - DOMAIN-SUFFIX,imgur.com,PROXY
+  - DOMAIN-SUFFIX,imagebam.com,PROXY
+  - DOMAIN,upload.cc,FSMEDIA
+  - DOMAIN,imgs.top,DIRECT
+  
+  # Short URL
+  # - DOMAIN,bit.ly,PROXY
+  - DOMAIN,bitly.com,PROXY
+  - DOMAIN,nyti.ms,PROXY
+  - DOMAIN,ab.co,PROXY
+  - DOMAIN,bbc.in,PROXY
+  - DOMAIN,trib.al,PROXY
+  
+  # Misc
+  - DOMAIN-KEYWORD,rule34,PROXY
+  - DOMAIN,safebrowsing.googleapis.com,DENIED
+  - DOMAIN,safebrowsing.urlsec.qq.com,DENIED
+  - DOMAIN-SUFFIX,neverssl.com,DIRECT
+  - DOMAIN-SUFFIX,inoreader.com,PROXY
+  # - DOMAIN,ping.pe,PROXY
+  - DOMAIN-SUFFIX,textnow.com,PROXY
+  - DOMAIN-SUFFIX,textnow.me,PROXY
+  - DOMAIN-SUFFIX,jsboxbbs.com,PROXY
+  - DOMAIN-SUFFIX,xteko.com,PROXY
+  - DOMAIN-SUFFIX,python.org,PROXY
+  - DOMAIN-SUFFIX,readthedocs.io,PROXY
+  - DOMAIN-SUFFIX,stackoverflow.com,PROXY
+  - DOMAIN-SUFFIX,dwnews.com,PROXY
+  - DOMAIN-SUFFIX,dropmail.me,PROXY
+  - DOMAIN-SUFFIX,goo.gl,PROXY
+  - DOMAIN-SUFFIX,iunbwv.com,PROXY
+  - DOMAIN-SUFFIX,mega.co.nz,PROXY
+  - DOMAIN-SUFFIX,fc2.com,PROXY
+  - DOMAIN-SUFFIX,artstation.com,PROXY
+  - DOMAIN,lvv2.com,PROXY
+  - DOMAIN-SUFFIX,kknews.cc,PROXY
+  - DOMAIN-SUFFIX,dlsite.com,PROXY
+  - DOMAIN-SUFFIX,pornhub.com,PROXY
+  - DOMAIN,archive.is,PROXY
+  - DOMAIN,archive.vn,PROXY
+  - DOMAIN,archive.today,PROXY
+  - DOMAIN-SUFFIX,me.me,PROXY
+  - DOMAIN,papersizes.io,PROXY
+  - DOMAIN,ss64.com,PROXY
+  - DOMAIN-SUFFIX,sourceforge.net,PROXY
+  - DOMAIN-SUFFIX,jsfiddle.net,PROXY
+  - DOMAIN-SUFFIX,blog.jp,PROXY
+  - DOMAIN-SUFFIX,blogimg.jp,PROXY
+  - DOMAIN-SUFFIX,kdbaidu.com,DIRECT
+  - DOMAIN-SUFFIX,karmadecay.com,PROXY
+  - DOMAIN-SUFFIX,bing.com,PROXY
+  # - DOMAIN-SUFFIX,bing.net,PROXY
+  - DOMAIN-SUFFIX,unicode-table.com,PROXY
+  - DOMAIN-SUFFIX,lvv2.com,PROXY
+  - DOMAIN,rentry.co,PROXY
+  - DOMAIN-SUFFIX,foundation.app,PROXY
+  - DOMAIN-SUFFIX,imgix.net,PROXY # foundation's image domain
+  - DOMAIN-SUFFIX,nexon.com,PROXY
+  
+  # Software
+  - DOMAIN,www.faststone.org,PROXY
+  - DOMAIN-SUFFIX,ccleaner.com,PROXY
+  - DOMAIN-SUFFIX,calibre-ebook.com,PROXY
+  - DOMAIN-SUFFIX,goldwave.com,PROXY
+  - DOMAIN-SUFFIX,bitcomet.com,PROXY
+  - DOMAIN-SUFFIX,imagemagick.org,PROXY
+  
+  # MainlandIPAccessDenied 
+  - DOMAIN-SUFFIX,read01.com,PROXY
+  - DOMAIN-SUFFIX,lihkg.com,PROXY
+  - DOMAIN-SUFFIX,koushoku.org,PROXY # HK Banned ?
+  # - DOMAIN,upload.cc,PROXY
+  - DOMAIN-SUFFIX,5ch.net,PROXY
+  - DOMAIN-SUFFIX,dmm.com,JP
+  - DOMAIN-SUFFIX,dmm.co.jp,JP
+  - DOMAIN-SUFFIX,dmm-extension.com,JP
+  - DOMAIN-SUFFIX,dmmgames.com,JP
+  - DOMAIN,navismithapis-cdn.com,JP
+  - DOMAIN,navismithapis.com,JP
+  - DOMAIN,p-smith.com,JP
+  - DOMAIN-SUFFIX,komiflo.jp,JP
+  
+  # Forum
+  - DOMAIN-SUFFIX,v2ex.com,PROXY
+  - DOMAIN,msfn.org,PROXY
+  - DOMAIN,2ch.hk,PROXY
+  
+  # Taiwa
+  - DOMAIN-SUFFIX,disp.cc,PROXY
+  - DOMAIN-SUFFIX,ptt.cc,PROXY
+  - DOMAIN-SUFFIX,pttweb.cc,PROXY
+  - DOMAIN-SUFFIX,myptt.cc,PROXY
+  - DOMAIN-SUFFIX,dcard.tw,PROXY
+  
+  # TikTok
+  - DOMAIN-SUFFIX,byteoversea.com,TIKTOK
+  - DOMAIN-SUFFIX,ibytedtos.com,TIKTOK
+  - DOMAIN-SUFFIX,ipstatp.com,TIKTOK
+  - DOMAIN-SUFFIX,muscdn.com,TIKTOK
+  - DOMAIN-SUFFIX,musical.ly,TIKTOK
+  - DOMAIN-SUFFIX,tik-tokapi.com,TIKTOK
+  - DOMAIN-SUFFIX,tiktok.com,TIKTOK
+  - DOMAIN-SUFFIX,tiktokcdn.com,TIKTOK
+  - DOMAIN-SUFFIX,tiktokv.com,TIKTOK
+  - DOMAIN-KEYWORD,-tiktokcdn-com,TIKTOK
+  # - USER-AGENT,tiktok*,TIKTOK
+  
+  # BT
+  - DOMAIN-KEYWORD,torrentkitty,DIRECT
+  - DOMAIN,www.torkitty.com,DIRECT
+  - DOMAIN,www.xunleiso.com,DIRECT
+  
+  # Extra
+  - DOMAIN,ghproxy.com,DIRECT
