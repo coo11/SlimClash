@@ -61,5 +61,6 @@ jobs:
         with:
           tag_name: weeklybuild
           prerelease: false
-          name: ${{ env.RELEASE_DESC }}
+          name: SlimClash
+          body: ${{ env.RELEASE_DESC }}
           files: SlimClash_2022.08.26.zip
