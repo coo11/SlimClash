@@ -180,25 +180,12 @@ rules:
   - DOMAIN,msfn.org,PROXY
   - DOMAIN,2ch.hk,PROXY
   
-  # Taiwa
+  # Taiwan
   - DOMAIN-SUFFIX,disp.cc,PROXY
   - DOMAIN-SUFFIX,ptt.cc,PROXY
   - DOMAIN-SUFFIX,pttweb.cc,PROXY
   - DOMAIN-SUFFIX,myptt.cc,PROXY
   - DOMAIN-SUFFIX,dcard.tw,PROXY
-  
-  # TikTok
-  - DOMAIN-SUFFIX,byteoversea.com,TIKTOK
-  - DOMAIN-SUFFIX,ibytedtos.com,TIKTOK
-  - DOMAIN-SUFFIX,ipstatp.com,TIKTOK
-  - DOMAIN-SUFFIX,muscdn.com,TIKTOK
-  - DOMAIN-SUFFIX,musical.ly,TIKTOK
-  - DOMAIN-SUFFIX,tik-tokapi.com,TIKTOK
-  - DOMAIN-SUFFIX,tiktok.com,TIKTOK
-  - DOMAIN-SUFFIX,tiktokcdn.com,TIKTOK
-  - DOMAIN-SUFFIX,tiktokv.com,TIKTOK
-  - DOMAIN-KEYWORD,-tiktokcdn-com,TIKTOK
-  # - USER-AGENT,tiktok*,TIKTOK
   
   # BT
   - DOMAIN-KEYWORD,torrentkitty,DIRECT

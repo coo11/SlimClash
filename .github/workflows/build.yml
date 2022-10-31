@@ -24,7 +24,7 @@ jobs:
             python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64') > -1]; print(src['name'].split(' ')[1] + ';' + urls[0])"
           )
           release_mark=$(echo $clash|cut -d ";" -f 1)
-          RELEASE_FILENAME=SlimClash_${release_mark// /_}.zip
+          release_title="SlimClash ${release_mark}.zip"
           
           curl -Loclash.zip $(echo $clash | cut -d ";" -f 2)
           7z x clash.zip # clash.zip/clash-windows-amd64.exe
@@ -42,17 +42,17 @@ jobs:
           cp bin/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/clash.ico
           
-          7z a -mm=Deflate -mfb=258 -mpass=15 -r ${RELEASE_FILENAME} SlimClash/
-          RELEASE_DESC="## Based on Clash Premium ${release_mark}
-          ### Related Link
-          [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
-          [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
-          [GeoIP2 · CN](https://github.com/Hackl0us/GeoIP2-CN)"
+          7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
+          RELEASE_DESC="## Related Links
+          > Based on Clash Premium ${release_mark}
+          - [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
+          - [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
+          - [GeoIP2 · CN](https://github.com/Hackl0us/GeoIP2-CN)"
           
           echo 'RELEASE_DESC<<EOF' >> $GITHUB_ENV
           echo "$RELEASE_DESC" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo "RF=$RELEASE_FILENAME" >> $GITHUB_ENV
+          echo "RELEASE_TITLE=$release_title" >> $GITHUB_ENV
       - name: Update Release
         uses: andelf/nightly-release@main
         env:
@@ -60,6 +60,6 @@ jobs:
         with:
           tag_name: weeklybuild
           prerelease: false
-          name: ${{ env.RF }}
+          name: ${{ env.RELEASE_TITLE }}
           body: ${{ env.RELEASE_DESC }}
-          files: ${{ env.RF }}
+          files: SlimClash.zip
