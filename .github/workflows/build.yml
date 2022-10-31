@@ -1,0 +1,26 @@
+name: build
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * fri"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: |
+          build.sh
+      - name: Update Release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: weeklybuild
+          prerelease: true
+          name: SlimClash
+          body: ${{ steps.Build.outputs.RELEASE_DESC}}
+          files: ${{ steps.Build.outputs.RELEASED_FILENAME}}
