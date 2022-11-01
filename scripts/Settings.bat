@@ -5,20 +5,20 @@ COLOR 0A
 CD /D %~dp0
 TITLE Clash Settings
 :HEAD
-ECHO  1. ���ÿ�������
-ECHO  2. ȡ����������
-ECHO  3. ��Ϊ IE ����
-ECHO  4. ȡ����Ϊ IE ����
-ECHO  5. �ų�ȫ�� UWP Ӧ�� Loopback ����
-ECHO  6. �ָ�ȫ�� UWP Ӧ�� Loopback ����
-ECHO  7. ��ȡ/���� GeoLite
-ECHO  8. ��ȡ/���� Dashboard
-ECHO  9. ���¶���
+ECHO  1. 设置开机启动
+ECHO  2. 取消开机启动
+ECHO  3. 设为 IE 代理
+ECHO  4. 取消设为 IE 代理
+ECHO  5. 排除全部 UWP 应用 Loopback 限制
+ECHO  6. 恢复全部 UWP 应用 Loopback 限制
+ECHO  7. 获取/更新 GeoLite
+ECHO  8. 获取/更新 Dashboard
+ECHO  9. 更新订阅
 ECHO  0. EnableLoopback.exe
 ECHO  ======================================================
-:: ѡ��˵�
+:: 选择菜单
 :: Use xcopy to retrieve the key press: https://stackoverflow.com/a/27257111/14168341
-<nul set /p ".=������ 0-9 ѡ���������˳���"
+<nul set /p ".=请输入 0-9 选择，其它键退出："
 SET "choix=" & for /f "delims=" %%a in ('xcopy /l /w "%~f0" "%~f0" 2^>nul') DO IF not defined choix set "choix=%%a"
 SET "choix=%choix:~-1%"
 FOR %%i in ( 1 2 3 4 5 6 7 8 9 0 ) DO IF %choix%==%%i ECHO %choix% && TIMEOUT /NOBREAK /T 1 >NUL
@@ -50,7 +50,7 @@ SET "config_path=.clash\config.yaml"
 FOR /F "tokens=1,* delims= " %%a in ('findstr "^port:" %config_path%') do set l=%%b
 FOR /F "tokens=1,* delims= " %%a in ('findstr "^socks-port:" %config_path%') do set m=%%b
 FOR /F "tokens=1,* delims= " %%a in ('findstr "^mixed-port:" %config_path%') do set n=%%b
-ECHO ��ȡ�����ļ��е� HTTP(S) �˿�Ϊ %l%��SOCKS �˿�Ϊ %m%����϶˿�Ϊ %n%��
+ECHO 获取配置文件中的 HTTP(S) 端口为 %l%，SOCKS 端口为 %m%，混合端口为 %n%。
 SET i="HKCU\SOFTWARE\MICROSOFT\Windows\CURRENTVERSION\Internet Settings"
 SETX http_proxy http://127.0.0.1:%n%
 SETX https_proxy http://127.0.0.1:%n%
@@ -58,7 +58,7 @@ REG ADD %i% /v "ProxyEnable" /t  REG_DWORD /d 1 /f >NUL 2>NUL
 REG ADD %i% /v "ProxyServer" /t  REG_SZ /d >NUL 2>NUL "127.0.0.1:%n%" /f >NUL 2>NUL
 REG ADD %i% /v "ProxyOverride" /t REG_SZ /d >NUL 2>NUL "localhost;127.*;10.*;172.16.*;172.17.*;172.18.*;172.19.*;172.20.*;172.21.*;172.22.*;172.23.*;172.24.*;172.25.*;172.26.*;172.27.*;172.28.*;172.29.*;172.30.*;172.31.*;192.168.*" /f >NUL 2>NUL
 ECHO.
-ECHO IE�����������
+ECHO IE代理设置完毕
 GOTO BACK
 
 :NOPROXY
@@ -67,7 +67,7 @@ SETX https_proxy ""
 REG ADD "HKCU\SOFTWARE\MICROSOFT\Windows\CURRENTVERSION\Internet Settings" /v "ProxyEnable" /t  REG_DWORD /d "0" /f >nul
 REG ADD "HKCU\SOFTWARE\MICROSOFT\Windows\CURRENTVERSION\Internet Settings" /v "ProxyServer" /t  REG_SZ /d "" /f >nul
 IPCONFIG /flushdns
-ECHO IE�����ѹر�
+ECHO IE代理已关闭
 GOTO BACK
 
 :UNBLOCK
@@ -100,14 +100,14 @@ PAUSE
 GOTO BACK
 
 :UPDATESUBS
-ECHO  ������ͨ�����ַ�ʽ���»������ġ�
-ECHO  ��ȡ�������Ӻ�
-ECHO  ���ڸ�Ŀ¼�´򿪻��½�һ���ı��ļ�
-ECHO   Subs.txt��һ����дһ���������ӣ�
-ECHO  ����󼴿��ڴ˽��水��������£�
-ECHO  �ڽ���Ŀ¼ .utils���ڴ�Ŀ¼��ִ��
-ECHO  ���� `qjs config.js [Link1] [Link2]...`
-ECHO  ���ɣ�ע�����Ӳ����Կո��������
+ECHO  您可以通过两种方式更新机场订阅。
+ECHO  获取订阅链接后：
+ECHO  1. 在根目录下打开或新建一个文本文件
+ECHO   Subs.txt，一行填写一条订阅链接，
+ECHO  保存后即可在此界面按任意键更新；
+ECHO  2. 进入目录 .utils，在此目录下执行
+ECHO  命令 `qjs config.js [Link1] [Link2]...`
+ECHO  即可（注意链接参数以空格隔开）。
 ECHO  ======================================================
 PAUSE
 CD "%~DP0.utils\"

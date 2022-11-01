@@ -1,0 +1,10 @@
+*         text=auto
+*.vbs text eol=crlf
+*.Vbs text eol=crlf
+*.VBS text eol=crlf
+*.bat text eol=crlf
+*.Bat text eol=crlf
+*.BAT text eol=crlf
+*.cmd text eol=crlf
+*.Cmd text eol=crlf
+*.CMD text eol=crlf
