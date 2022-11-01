@@ -81,7 +81,6 @@ GOTO BACK
 :GOEIP
 :: GeoLite2-Country.mmdb
 :: .tar.gz:
-:: Key: uSKs4zivaWMD8N6j(Surge), oeEqpP5QI21N(Clash-Web-Bat)
 :: Format: https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${LICENSE_KEY}&suffix=tar.gz
 CD "%~DP0.utils\"
 :: curl -o gl2c.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=uSKs4zivaWMD8N6j&suffix=tar.gz" && 7za.exe e gl2c.tar.gz && 7za e gl2c.tar "GeoLite2-Country*\GeoLite2-Country.mmdb" -aoa && move /Y GeoLite2-Country.mmdb ..\.clash\Country.mmdb && del gl2c.tar* /F /Q
@@ -102,14 +101,16 @@ GOTO BACK
 :UPDATESUBS
 ECHO  您可以通过两种方式更新机场订阅。
 ECHO  获取订阅链接后：
-ECHO  1. 在根目录下打开或新建一个文本文件
+ECHO  ①在根目录下打开或新建一个文本文件
 ECHO   Subs.txt，一行填写一条订阅链接，
 ECHO  保存后即可在此界面按任意键更新；
-ECHO  2. 进入目录 .utils，在此目录下执行
+ECHO  ②进入目录 .utils，在此目录下执行
 ECHO  命令 `qjs config.js [Link1] [Link2]...`
 ECHO  即可（注意链接参数以空格隔开）。
 ECHO  ======================================================
 PAUSE
+CLS
+ECHO 尝试请求订阅链接......
 CD "%~DP0.utils\"
 qjs config.js
 PAUSE

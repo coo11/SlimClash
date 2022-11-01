@@ -63,7 +63,7 @@ jobs:
           mv output.yaml SlimClash/.clash/config.yaml
           cp config.js bin/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/icon.ico
-          cp scripts/* -t SlimClash/
+          cp scripts/*.bat scripts/*.vbs -t SlimClash/
           
           7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
       - name: Update Release
