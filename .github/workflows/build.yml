@@ -41,6 +41,7 @@ jobs:
           mv output.yaml SlimClash/.clash/config.yaml
           cp config.js bin/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/clash.ico
+          cp scripts/* -t SlimClash/
           
           7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
           RELEASE_DESC="> Based on Clash Premium ${release_mark}, only packaged version amd64 for Windows.
