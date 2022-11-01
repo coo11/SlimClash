@@ -74,8 +74,8 @@ if __name__ == "__main__":
         with open("./config/basic.yaml") as b:
             f.write(b.read())
         f.write("\n\n")
-        with open("./config/proxy-providers.yaml") as pp:
-            f.write(pp.read())
+        with open("./config/proxy-groups.yaml") as pg:
+            f.write(pg.read())
         f.write("\n\n")
         with open("./config/rule-providers.yaml") as rp:
             rule_providers = load(rp, Loader=SafeLoader)

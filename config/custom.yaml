@@ -95,7 +95,7 @@ rules:
   # Image Host
   - DOMAIN-SUFFIX,imgur.com,PROXY
   - DOMAIN-SUFFIX,imagebam.com,PROXY
-  - DOMAIN,upload.cc,FSMEDIA
+  - DOMAIN,upload.cc,OSMEDIA
   - DOMAIN,imgs.top,DIRECT
   
   # Short URL

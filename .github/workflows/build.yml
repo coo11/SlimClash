@@ -39,12 +39,12 @@ jobs:
           
           python parser.py
           mv output.yaml SlimClash/.clash/config.yaml
-          cp bin/* -t SlimClash/.utils/
+          cp config.js bin/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/clash.ico
           
           7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
-          RELEASE_DESC="## Related Links
-          > Based on Clash Premium ${release_mark}
+          RELEASE_DESC="> Based on Clash Premium ${release_mark}, only packaged version amd64 for Windows.
+          ## Related Links
           - [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
           - [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
           - [GeoIP2 · CN](https://github.com/Hackl0us/GeoIP2-CN)"
