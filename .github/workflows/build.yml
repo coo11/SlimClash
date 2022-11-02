@@ -61,10 +61,13 @@ jobs:
           python parser.py
           
           mv output.yaml SlimClash/.clash/config.yaml
+          mv *.yaml -t SlimClash/.clash/ruleset/
           cp config.js bin/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/icon.ico
           cp scripts/*.bat scripts/*.vbs -t SlimClash/
           
+          7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash_rs.zip SlimClash/
+          rm -rf SlimClash/ruleset/*.yaml
           7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
       - name: Update Release
         uses: andelf/nightly-release@main
@@ -75,4 +78,4 @@ jobs:
           prerelease: false
           name: ${{ env.RELEASE_TITLE }}
           body: ${{ env.RELEASE_DESC }}
-          files: SlimClash.zip
+          files: SlimClash*.zip

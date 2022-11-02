@@ -21,7 +21,7 @@ function exec(cmd) {
 }
 
 function deduplicate(nodes) {
-  let names = nodes.map((node) => node.name);
+  let names = nodes.map(node => node.name);
   let obj = {};
   for (let i = 0; i < nodes.length; i++) {
     let name = names[i];
@@ -31,7 +31,7 @@ function deduplicate(nodes) {
       obj[name] = j + 1;
       while (names.indexOf(`${name}_${j}`) > -1) j++;
       let newName = `${name}_${j}`;
-      test[newName] = 1;
+      obj[newName] = 1;
       names.push(newName);
       nodes[i].name = newName;
     }
@@ -42,7 +42,7 @@ function deduplicate(nodes) {
 function generateGroup(nodes, groups) {
   let code = ["JP", "HK", "TW", "US", "EA", "XX"],
     regexList = [/日本/, /深港|香港/, /台湾|彰化/, /美国/, /韩国|新加坡|狮城/],
-    newGroups = code.map((i) => {
+    newGroups = code.map(i => {
       return { name: i, proxies: [] };
     });
   for (let node of nodes) {
@@ -53,10 +53,10 @@ function generateGroup(nodes, groups) {
     newGroups[i].proxies.push(node.name);
   }
   let hasEmptyGroup = false;
-  groups.forEach((group) => {
+  groups.forEach(group => {
     let i = code.indexOf(group.name);
     // If array proxies' length is 0, Clash will be crashed
-    // Here is a safe check
+    // Here is a safety check
     if (i > -1) {
       let newGroupedProxies = newGroups[i].proxies;
       if (newGroupedProxies.length > 0) group.proxies = newGroupedProxies;
@@ -65,7 +65,7 @@ function generateGroup(nodes, groups) {
         group.proxies = ["Placeholder"];
       }
     } else if (group.name === "ALL") {
-      group.proxies = nodes.map((i) => i.name);
+      group.proxies = nodes.map(i => i.name);
     } else if (group.name.length === 2) {
       hasEmptyGroup = true;
       group.proxies = ["Placeholder"];
@@ -95,15 +95,15 @@ function getNodesFromSub(urls) {
     } catch (e) {
       sub = jsyaml.load(data);
     }
-    if (sub && sub?.proxies.length !== 0) subs = subs.concat(...sub.proxies);
+    if (sub && sub?.proxies.length) subs = subs.concat(...sub.proxies);
   }
   if (subs.length === 0) throw new Error("No nodes found!");
   else return subs;
 }
 
-function saveToFiles(data, path) {
+function saveToFile(path, data) {
   data = strToBytesArray(data);
-  let fd = os.open("../.clash/config.yaml", os.O_WRONLY);
+  let fd = os.open(path, os.O_WRONLY);
   if (fd < 0) throw new Error(`Open file ${path} error!`);
   os.write(fd, data.buffer, 0, data.length);
   os.close(fd);
@@ -130,6 +130,6 @@ function saveToFiles(data, path) {
   proxies = jsyaml.dump({ proxies }, { flowLevel: 2 });
   pg = jsyaml.dump(pg, { flowLevel: 3 });
   config = restPart.replace("\nrule-providers:", `\n\n${proxies}\n\n${pg}\n$&`);
-  saveToFiles(config, "../.clash/config.yaml");
+  saveToFile("../.clash/config.yaml", config);
   console.log("Nodes has been updated successfully!");
 })();

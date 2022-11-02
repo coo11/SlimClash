@@ -9,7 +9,7 @@ proxy-groups:
   - {"name":"EA","type":"select","proxies":["Placeholder"]}
   - {"name":"XX","type":"select","proxies":["Placeholder"]}
   - {"name":"ALL","type":"url-test","interval":7200,"tolerance":20,"url":"http://youtube.com/generate_204","proxies":["Placeholder"]}
-  - {"name":"PROXY","type":"select","proxies":["ALL","JP","HK","TW","US","EA","XX","DIRECT"]}
+  - {"name":"PROXY","type":"select","proxies":["ALL","HK","JP","TW","US","EA","XX","DIRECT"]}
   - {"name":"NATIVE","type":"select","proxies":["DIRECT","ALL","TW","JP","HK"]}
   - {"name":"OSMEDIA","type":"select","proxies":["ALL","TW","JP","HK","US","PROXY"]}
   - {"name":"TIKTOK","type":"select","proxies":["JP","US","PROXY"]}

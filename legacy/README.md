@@ -1,19 +1,19 @@
-## A utility to generate Clash Config.yaml
+## A utility to generate Clash `config.yaml`
 
 ### Usage
 ```bash
-python Config.py https://clash.subscription.link/xxxxxxxxx
+python config.py https://clash.subscription.link/xxxxxxxxx
 # Or just update subscriptions or rules by -s [links] or -r.
 # View help
-python Config.py --help
+python config.py --help
 ```
-- You can give serval **clash subscription links** with space.
+- You can input serveral **clash subscription links** separated by spaces.
 - If give nothing, script will get info from `custom.yaml` (If exists).
 - About `custom.yaml`:
     ```yaml
     subs:
       - https://clash.subscription.link/xxxxxxxxx
-      - https://clash.subscription.link/yyyyyyyyy
+      - https://www.proxyprovider.com/yyyyyyyyy
       # Write your subscription links here
       # ....
 
@@ -23,8 +23,8 @@ python Config.py --help
       # Write your custom rules here and script will combine it with rule-provider's source.
       # ....
     ```
-    - In this way, just run `python Config.py` is OK.
+    - In this way, just run `python config.py`.
 - WARNING: Because of RULE-SET contained, you need to use Clash Premium.
 
 ### TODO
-  [ ] Auto convert non-clash subscription link in Python
+  - [ ] ~~Auto convert non-clash subscription link in Python~~ (use [subconverter](https://github.com/tindy2013/subconverter) instead)

@@ -2,6 +2,7 @@
 
 from subprocess import run  # subprocess.PIPE=-1
 from yaml import load, SafeLoader, dump
+from pathlib import Path
 
 
 def merge_rules(rule_providers):
@@ -41,6 +42,21 @@ def merge_rules(rule_providers):
     return rules
 
 
+def check_rules(rules, available_group_names):
+    new_rules = []
+    for i in rules:
+        j = i.split(",")
+        if (
+            j[-1] == "no-resolve"
+            and j[-2] in available_group_names
+            or j[-1] in available_group_names
+        ):
+            new_rules.append(i)
+        else:
+            print(f'Rule "{i}"\'s is invalid. remove.')
+    return new_rules
+
+
 def parse(arg):
     output = ""
     try:
@@ -68,6 +84,10 @@ def generate(url, policy):
     return edit(ruleset["payload"], policy)
 
 
+def download(url, filename):
+    return run(["curl", f"-fLo{filename}", url])
+
+
 if __name__ == "__main__":
     print("Generating config.yaml....")
     with open("output.yaml", "w+") as f:
@@ -75,11 +95,20 @@ if __name__ == "__main__":
             f.write(b.read())
         f.write("\n\n")
         with open("./config/proxy-groups.yaml") as pg:
-            f.write(pg.read())
+            proxy_groups = pg.read()
+            f.write(proxy_groups)
+            # Prepare for custom rules safety check
+            proxy_groups = load(proxy_groups, Loader=SafeLoader)
+            all_proxy_group_names = [i["name"] for i in proxy_groups]
         f.write("\n\n")
         with open("./config/rule-providers.yaml") as rp:
             rule_providers = load(rp, Loader=SafeLoader)
             rules = merge_rules(rule_providers)
+            rules = check_rules(rules, all_proxy_group_names)
+            # Downdload Rulesets
+            for i in rule_providers["rule-providers"]:
+                name = Path(i["path"]).name
+                download(i["url"], name)
             del rule_providers["config"]
         f.write(dump(rule_providers, indent=2))
         f.write("\n\n" + "rules:\n  - " + "\n  - ".join(rules))

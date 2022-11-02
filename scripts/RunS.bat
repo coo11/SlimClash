@@ -10,10 +10,10 @@ FOR /F "tokens=1,* delims= " %%a in ('findstr "^mixed-port:" %config_path%') do 
 FOR /f "tokens=1,* delims= " %%a in ('findstr "^external-controller:" %config_path%') do set ec=%%b
 SET "ec=%ec:'=%"
 SET "ec=%ec:"=%"
-ECHO [InternetShortcut] > ".\DASHBOARD.url"
-ECHO URL="http://%EC%/ui" >> ".\DASHBOARD.url"
-ECHO IconFile=%~dp0icon.ico >> ".\DASHBOARD.url"
-ECHO IconIndex=0 >> ".\DASHBOARD.url"
+ECHO [InternetShortcut] > DASHBOARD.url
+ECHO URL="http://%EC%/ui" >> DASHBOARD.url
+ECHO IconFile=%~dp0icon.ico >> DASHBOARD.url
+ECHO IconIndex=0 >> DASHBOARD.url
 
 POWERSHELL -nop -c "Add-Type -AssemblyName System.Windows.Forms; $global:balloon=New-Object System.Windows.Forms.NotifyIcon; $balloon.Icon=[System.Drawing.Icon]::ExtractAssociatedIcon('icon.ico'); $balloon.BalloonTipIcon=[System.Windows.Forms.ToolTipIcon]::None; $balloon.BalloonTipText='HTTP(S) - %l%; Socks5 - %m%; Mixed - %n%'; $balloon.BalloonTipTitle='Proxy ports confirm'; $balloon.Visible=$true; $balloon.Text='Clash Premuim'; $balloon.ShowBalloonTip(4000); Start-Sleep -s 4; $balloon.Dispose()"
 SET "i=HKCU\SOFTWARE\MICROSOFT\Windows\CURRENTVERSION\Internet Settings"

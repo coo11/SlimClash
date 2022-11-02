@@ -1,5 +1,0 @@
-subs:
-  # - https://www.proxyprovider.com/clash_subscription_link/xxxxxxxxx
-
-rules:
-  - DOMAIN-SUFFIX,imgur.com,PROXY
