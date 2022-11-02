@@ -42,18 +42,16 @@ def merge_rules(rule_providers):
     return rules
 
 
-def check_rules(rules, available_group_names):
+def check_rules(rules, group_names):
+    # ATTENTION: Group names is case sensitive. include build-in policies.
+    group_names += ["DIRECT", "REJECT"]
     new_rules = []
     for i in rules:
         j = i.split(",")
-        if (
-            j[-1] == "no-resolve"
-            and j[-2] in available_group_names
-            or j[-1] in available_group_names
-        ):
+        if (j[-1] == "no-resolve" and j[-2] in group_names) or j[-1] in group_names:
             new_rules.append(i)
         else:
-            print(f'Rule "{i}"\'s is invalid. remove.')
+            print(f'Rule "{i}"\'s policy is invalid. remove.')
     return new_rules
 
 
@@ -106,7 +104,7 @@ if __name__ == "__main__":
             rules = merge_rules(rule_providers)
             rules = check_rules(rules, all_proxy_group_names)
             # Downdload Rulesets
-            for i in rule_providers["rule-providers"]:
+            for i in rule_providers["rule-providers"].values():
                 name = Path(i["path"]).name
                 download(i["url"], name)
             del rule_providers["config"]
