@@ -66,7 +66,7 @@ jobs:
           cp src/icon.ico SlimClash/icon.ico
           cp scripts/*.bat scripts/*.vbs -t SlimClash/
           
-          7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash&rs.zip SlimClash/
+          7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash_rs.zip SlimClash/
           rm -rf SlimClash/.clash/ruleset/*.yaml
           7z a -mm=Deflate -mfb=258 -mpass=15 -r SlimClash.zip SlimClash/
       - name: Update Release
