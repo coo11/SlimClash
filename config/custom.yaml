@@ -68,17 +68,12 @@ rules:
   - DOMAIN-SUFFIX,bahamut.com.tw,PROXY
   - DOMAIN-SUFFIX,nhentai.net,PROXY
   - DOMAIN-SUFFIX,navirank.com,PROXY
-  - DOMAIN-SUFFIX,dm530.cc,PROXY
-  - DOMAIN-SUFFIX,cnpicacomic.com,PROXY
   - DOMAIN-SUFFIX,konami.net,PROXY
   - DOMAIN-SUFFIX,kemono.party,PROXY
   ## Pixiv
   - DOMAIN-SUFFIX,pixiv.net,PROXY
   - DOMAIN,ads-pixiv.net,REJECT
   - DOMAIN,pixiv.org,PROXY
-  - DOMAIN,i.pximg.net,PROXY
-  - DOMAIN,i-f.pximg.net,DIRECT
-  - DOMAIN,i-cf.pximg.net,PROXY
   - DOMAIN-SUFFIX,pximg.net,PROXY
   - DOMAIN-SUFFIX,fanbox.cc,PROXY
   ## Niconico
@@ -96,7 +91,6 @@ rules:
   - DOMAIN-SUFFIX,imgur.com,PROXY
   - DOMAIN-SUFFIX,imagebam.com,PROXY
   - DOMAIN,upload.cc,OSMEDIA
-  - DOMAIN,imgs.top,DIRECT
   
   # Short URL
   # - DOMAIN,bit.ly,PROXY
@@ -151,6 +145,8 @@ rules:
   - DOMAIN-SUFFIX,foundation.app,PROXY
   - DOMAIN-SUFFIX,imgix.net,PROXY # foundation's image domain
   - DOMAIN-SUFFIX,nexon.com,PROXY
+  - DOMAIN,ygocdb.com,DIRECT
+  - DOMAIN,transfer.sh,DIRECT
   
   # Software
   - DOMAIN,www.faststone.org,PROXY
@@ -163,7 +159,7 @@ rules:
   # MainlandIPAccessDenied 
   - DOMAIN-SUFFIX,read01.com,PROXY
   - DOMAIN-SUFFIX,lihkg.com,PROXY
-  - DOMAIN-SUFFIX,koushoku.org,PROXY # HK Banned ?
+  - DOMAIN-SUFFIX,koushoku.org,DIRECT # HK Banned ?
   # - DOMAIN,upload.cc,PROXY
   - DOMAIN-SUFFIX,5ch.net,PROXY
   - DOMAIN-SUFFIX,dmm.com,JP

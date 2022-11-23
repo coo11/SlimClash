@@ -76,7 +76,7 @@ function generateGroup(nodes, groups) {
       name: "Placeholder",
       type: "http",
       server: "127.0.0.1:1080",
-      port: 443,
+      port: 80,
     });
   return { proxies: nodes, "proxy-groups": groups };
 }
@@ -129,7 +129,9 @@ function saveToFile(path, data) {
     { proxies, ...pg } = generateGroup(nodes, parsed["proxy-groups"]);
   proxies = jsyaml.dump({ proxies }, { flowLevel: 2 });
   pg = jsyaml.dump(pg, { flowLevel: 3 });
-  config = restPart.replace("\nrule-providers:", `\n\n${proxies}\n\n${pg}\n$&`);
+  config = restPart
+    .replace("\nrule-providers:", `\n\n${proxies}\n\n${pg}\n$&`)
+    .replace(/\r?\n/g, "\r\n");
   saveToFile("../.clash/config.yaml", config);
   console.log("Nodes has been updated successfully!");
 })();
