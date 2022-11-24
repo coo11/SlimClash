@@ -57,8 +57,10 @@ jobs:
           curl -Loqjscu.zip https://github.com/coo11/SlimClash/releases/download/quickjs/qjsc_utils.zip
           7z x qjscu.zip
           cd qjsc_utils
-          ./qjsc -e -o config.c -flto -fno-eval ../config.js
-          x86_64-w64-mingw32-gcc -s -o config.exe -I./ -L./ -lqjs config.c
+          chmod +x *
+          ./pack.sh ../config.js
+          #./qjsc -e -o config.c -flto -fno-eval ../config.js
+          #x86_64-w64-mingw32-gcc -s -o config.exe -I./ -L./ -lqjs config.c
       - name: Pack related files
         run: |
           mkdir -p SlimClash/.clash/dashboard/../ruleset/../../.utils/
