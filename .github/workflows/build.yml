@@ -53,7 +53,7 @@ jobs:
           curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip
           7z x wt.zip
       - name: Compile config.js
-        run:
+        run: |
           curl -Loqjscu.zip https://github.com/coo11/SlimClash/releases/download/quickjs/qjsc_utils.zip
           7z x qjscu.zip
           cd qjsc_utils
