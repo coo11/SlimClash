@@ -50,6 +50,14 @@ jobs:
           curl -Lodashboard.zip https://github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip
           7z x dashboard.zip
           curl -Logeodb https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
+          curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip
+          7z x wt.zip
+      - name: Compile config.js
+        run:
+          curl -Loqjscu.zip https://github.com/coo11/SlimClash/releases/download/quickjs/qjsc_utils.zip
+          7z x qjscu.zip
+          cd qjsc_utils
+          pack.sh ../config.js
       - name: Pack related files
         run: |
           mkdir -p SlimClash/.clash/dashboard/../ruleset/../../.utils/
@@ -62,7 +70,7 @@ jobs:
           
           mv output.yaml SlimClash/.clash/config.yaml
           mv *.yaml -t SlimClash/.clash/ruleset/
-          cp config.js bin/* -t SlimClash/.utils/
+          cp qjsc_utils/qjs.dll qjsc_utils/config.exe win_tools/* -t SlimClash/.utils/
           cp src/icon.ico SlimClash/icon.ico
           cp scripts/*.bat scripts/*.vbs -t SlimClash/
           

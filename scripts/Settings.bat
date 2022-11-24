@@ -105,14 +105,14 @@ ECHO  ①在根目录下打开或新建一个文本文件
 ECHO   Subs.txt，一行填写一条订阅链接，
 ECHO  保存后即可在此界面按任意键更新；
 ECHO  ②进入目录 .utils，在此目录下执行
-ECHO  命令 `qjs config.js [Link1] [Link2]...`
+ECHO  命令 `config.exe [Link1] [Link2]...`
 ECHO  即可（注意链接参数以空格隔开）。
 ECHO  ======================================================
 PAUSE
 CLS
 ECHO 尝试请求订阅链接......
 CD "%~DP0.utils\"
-qjs config.js
+config.exe
 PAUSE
 GOTO BACK
 
