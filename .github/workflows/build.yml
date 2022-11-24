@@ -58,9 +58,8 @@ jobs:
           7z x qjscu.zip
           cd qjsc_utils
           chmod +x *
+          sudo apt-get mingw-w64
           ./pack.sh ../config.js
-          #./qjsc -e -o config.c -flto -fno-eval ../config.js
-          #x86_64-w64-mingw32-gcc -s -o config.exe -I./ -L./ -lqjs config.c
       - name: Pack related files
         run: |
           mkdir -p SlimClash/.clash/dashboard/../ruleset/../../.utils/
