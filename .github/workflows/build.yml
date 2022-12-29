@@ -70,6 +70,7 @@ jobs:
           pip install pyyaml
           python parser.py
           
+          vim output.yaml -c "set ff=dos" -c ":wq"
           mv output.yaml SlimClash/.clash/config.yaml
           mv *.yaml -t SlimClash/.clash/ruleset/
           cp qjsc_utils/qjs.dll qjsc_utils/config.exe win_tools/* -t SlimClash/.utils/

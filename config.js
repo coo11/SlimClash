@@ -103,7 +103,7 @@ function getNodesFromSub(urls) {
 
 function saveToFile(path, data) {
   data = strToBytesArray(data);
-  let fd = os.open(path, os.O_WRONLY);
+  let fd = os.open(path, os.O_WRONLY | os.O_TRUNC);
   if (fd < 0) throw new Error(`Open file ${path} error!`);
   os.write(fd, data.buffer, 0, data.length);
   os.close(fd);
@@ -122,7 +122,7 @@ function saveToFile(path, data) {
   let config = std.loadFile("../.clash/config.yaml")?.trim();
   if (!config) throw new Error("config.yaml not found or is blank!");
   let restPart = config.replace(
-      /\s*\nprox(?:ies|y-groups):[\d\D]*?(?=\n\w)/g,
+      /\s*\nprox(?:ies|y-groups):[\d\D]*?(?=\r\n\w)/g,
       ""
     ),
     parsed = jsyaml.load(config),
