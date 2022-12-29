@@ -68,7 +68,7 @@ rules:
   - DOMAIN-SUFFIX,bahamut.com.tw,PROXY
   - DOMAIN-SUFFIX,nhentai.net,PROXY
   - DOMAIN-SUFFIX,navirank.com,PROXY
-  - DOMAIN-SUFFIX,konami.net,DIRECT
+  - DOMAIN-SUFFIX,konami.net,DIRECT,no-resolve
   - DOMAIN-SUFFIX,kemono.party,PROXY
   ## Pixiv
   - DOMAIN-SUFFIX,pixiv.net,PROXY
@@ -189,4 +189,5 @@ rules:
   - DOMAIN,www.xunleiso.com,DIRECT
   
   # Extra
+  - DOMAIN-SUFFIX,coo11.eu.org,DIRECT
   - DOMAIN,ghproxy.com,DIRECT
