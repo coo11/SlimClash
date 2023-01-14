@@ -58,6 +58,7 @@ jobs:
           7z x qjscu.zip
           cd qjsc_utils
           chmod +x *
+          sudo apt-get update
           sudo apt-get install mingw-w64
           ./pack.sh ../config.js
       - name: Pack related files
