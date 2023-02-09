@@ -189,5 +189,6 @@ rules:
   - DOMAIN,www.xunleiso.com,DIRECT
   
   # Extra
+  - DOMAIN,chat.openai.com,TIKTOK
   - DOMAIN-SUFFIX,coo11.eu.org,DIRECT
   - DOMAIN,ghproxy.com,DIRECT
