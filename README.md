@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="https://github.com/coo11/SlimClash/actions">
-    <img src="https://img.shields.io/github/workflow/status/coo11/SlimClash/build?style=flat-square" alt="Github Actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/coo11/SlimClash/build.yml?branch=main&style=flat-square" alt="Github Actions">
   </a>
   <img src="https://img.shields.io/badge/PowerShell-%3E=%202.0-brightgreen?style=flat-square">
   <a href="https://github.com/coo11/SlimClash/releases/tag/weeklybuild">
