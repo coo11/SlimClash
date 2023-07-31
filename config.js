@@ -86,7 +86,7 @@ function getNodesFromSub(urls) {
   for (let url of urls) {
     let data = exec(`curl -fsL ${url}`);
     if (!data) {
-      console.log(`Error: Subscription URL '${url}' request failure.`);
+      console.log(`Error: Subscription URL '${url}' requested failure.`);
       continue;
     }
     let sub;
@@ -101,9 +101,27 @@ function getNodesFromSub(urls) {
   else return subs;
 }
 
+function fetchRuleSets(config) {
+  let parsed = jsyaml.load(config),
+    { "rule-providers": rp } = parsed;
+  for (let i in rp) {
+    let { url, path, type } = rp[i];
+    if (!url || !path || !type || type != "http") continue;
+    let data = exec(`curl -fsL ${url}`);
+    if (!data) {
+      console.log(`Error: Ruleset "${i} fetched failure."`);
+      continue;
+    } else {
+      saveToFile(`../.clash/${path}`, data);
+      console.log(`Ruleset "${i}" fetched success.`);
+    }
+  }
+}
+
 function saveToFile(path, data) {
+  path = os.realpath(path)[0];
   data = strToBytesArray(data);
-  let fd = os.open(path, os.O_WRONLY | os.O_TRUNC);
+  let fd = os.open(path, os.O_CREAT | os.O_WRONLY | os.O_TRUNC);
   if (fd < 0) throw new Error(`Open file ${path} error!`);
   os.write(fd, data.buffer, 0, data.length);
   os.close(fd);
@@ -117,10 +135,17 @@ function saveToFile(path, data) {
     if (!str) throw new Error("No subscription links found!");
     args = str.split("\n");
   }
-  let nodes = getNodesFromSub(args);
-  deduplicate(nodes);
+
   let config = std.loadFile("../.clash/config.yaml")?.trim();
   if (!config) throw new Error("config.yaml not found or is blank!");
+
+  if (args[0] === "-d") {
+    fetchRuleSets(config);
+    std.exit(0);
+  }
+
+  let nodes = getNodesFromSub(args);
+  deduplicate(nodes);
   let restPart = config.replace(
       /\s*\nprox(?:ies|y-groups):[\d\D]*?(?=\r\n\w)/g,
       ""

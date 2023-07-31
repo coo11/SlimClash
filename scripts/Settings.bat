@@ -1,10 +1,11 @@
 SETLOCAL enabledelayedexpansion
 @ECHO off
-MODE con lines=12 cols=56
+MODE con lines=13 cols=56
 COLOR 0A
 CD /D %~dp0
 TITLE Clash Settings
 :HEAD
+ECHO  0. EnableLoopback.exe
 ECHO  1. 设置开机启动
 ECHO  2. 取消开机启动
 ECHO  3. 设为 IE 代理
@@ -14,7 +15,7 @@ ECHO  6. 恢复全部 UWP 应用 Loopback 限制
 ECHO  7. 获取/更新 GeoLite
 ECHO  8. 获取/更新 Dashboard
 ECHO  9. 更新订阅
-ECHO  0. EnableLoopback.exe
+ECHO  A. 更新规则
 ECHO  ======================================================
 :: 选择菜单
 :: Use xcopy to retrieve the key press: https://stackoverflow.com/a/27257111/14168341
@@ -24,6 +25,7 @@ SET "choix=%choix:~-1%"
 FOR %%i in ( 1 2 3 4 5 6 7 8 9 0 ) DO IF %choix%==%%i ECHO %choix% && TIMEOUT /NOBREAK /T 1 >NUL
 CLS
 ECHO.
+IF /i "%choix%"=="0" "%~dp0.utils\EnableLoopback.exe" && GOTO HEAD
 IF /i "%choix%"=="1" GOTO STARTUP
 IF /i "%choix%"=="2" GOTO NOSTARTUP
 IF /i "%choix%"=="3" GOTO PROXY
@@ -33,7 +35,7 @@ IF /i "%choix%"=="6" GOTO BLOCK
 IF /i "%choix%"=="7" GOTO GOEIP
 IF /i "%choix%"=="8" GOTO DASHBOARD
 IF /i "%choix%"=="9" GOTO UPDATESUBS
-IF /i "%choix%"=="0" "%~dp0.utils\EnableLoopback.exe" && GOTO HEAD
+IF /i "%choix%"=="A" GOTO UPDATERULES
 EXIT
 
 :STARTUP
@@ -110,9 +112,22 @@ ECHO  即可（注意链接参数以空格隔开）。
 ECHO  ======================================================
 PAUSE
 CLS
-ECHO 尝试请求订阅链接......
+ECHO  尝试请求订阅链接......
 CD "%~DP0.utils\"
 config.exe
+PAUSE
+GOTO BACK
+
+:UPDATERULES
+ECHO  当 Clash 因为无法更新规则无法
+ECHO  启动时，可以通过此方式主动对
+ECHO  规则进行更新。也可进入目录 
+ECHO  .utils，在此目录下执行
+ECHO  命令 `config.exe -d` 即可。
+ECHO  ======================================================
+ECHO  尝试请求订阅规则......
+CD "%~DP0.utils\"
+config.exe -d
 PAUSE
 GOTO BACK
 
