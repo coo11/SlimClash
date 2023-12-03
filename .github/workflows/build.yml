@@ -27,12 +27,14 @@ jobs:
           done
       - name: Download and Uncompress
         run: |
-          clash=$(
-            curl -s 'https://api.github.com/repos/Dreamacro/clash/releases/tags/premium' | \
-            python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64') > -1]; print(src['name'].split(' ')[1] + ';' + urls[0])"
-          )
-          release_mark=$(echo $clash|cut -d ";" -f 1)
-          release_title="SlimClash ${release_mark}.zip"
+          # clash=$(
+          #   curl -s 'https://api.github.com/repos/Dreamacro/clash/releases/tags/premium' | \
+          #   python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64') > -1]; print(src['name'].split(' ')[1] + ';' + urls[0])"
+          # )
+          # release_mark=$(echo $clash|cut -d ";" -f 1)
+          release_mark="last version"
+          # release_title="SlimClash ${release_mark}.zip"
+          release_title="SlimClash upstream ran away TAT"
           
           RELEASE_DESC="> Based on Clash Premium ${release_mark}, only packaged version amd64 for Windows.
           ## Related Links
@@ -45,9 +47,11 @@ jobs:
           echo 'EOF' >> $GITHUB_ENV
           echo "RELEASE_TITLE=$release_title" >> $GITHUB_ENV
 
-          curl -Loclash.zip $(echo $clash | cut -d ";" -f 2)
+          # curl -Loclash.zip $(echo $clash | cut -d ";" -f 2)
+          curl -Loclash.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-premium-windows-amd64_2023-9-20.zip
           7z x clash.zip # clash.zip/clash-windows-amd64.exe
-          curl -Lodashboard.zip https://github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip
+          # curl -Lodashboard.zip https://github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip
+          curl -Lodashboard.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-dashboard-gh-pages.zip
           7z x dashboard.zip
           curl -Logeodb https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
           curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip

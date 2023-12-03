@@ -147,6 +147,7 @@ rules:
   - DOMAIN-SUFFIX,nexon.com,PROXY
   - DOMAIN,ygocdb.com,DIRECT
   - DOMAIN,transfer.sh,DIRECT
+  - DOMAIN,www.hifini.com,DIRECT
   
   # Software
   - DOMAIN,www.faststone.org,PROXY

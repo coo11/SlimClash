@@ -37,7 +37,7 @@ def merge_rules(rule_providers):
         # Append Rest Ruleset
         for i in rest_ruleset:
             rules.append(f"RULE-SET,{i['name']},{i['policy']}")
-    rules.append("GEOIP,CN,DIRECT,no-resolve")
+    rules.append("GEOIP,CN,DIRECT")
     rules.append("MATCH,MATCH")
     return rules
 
