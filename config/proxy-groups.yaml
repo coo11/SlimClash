@@ -14,5 +14,4 @@ proxy-groups:
   - {"name":"OSMEDIA","type":"select","proxies":["ALL","TW","JP","HK","US","PROXY"]}
   - {"name":"RESTRICT","type":"select","proxies":["JP","US","PROXY"]}
   - {"name":"MATCH","type":"select","proxies":["PROXY","DIRECT"]}
-  - {"name":"MATCHR","type":"select","proxies":["DIRECT","PROXY"]}
   - {"name":"DENIED","type":"select","proxies":["REJECT","NATIVE"]}
