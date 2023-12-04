@@ -97,7 +97,8 @@ if __name__ == "__main__":
             f.write(proxy_groups)
             # Prepare for custom rules safety check
             proxy_groups = load(proxy_groups, Loader=SafeLoader)
-            all_proxy_group_names = [i["name"] for i in proxy_groups["proxy-groups"]]
+            all_proxy_group_names = [i["name"]
+                                     for i in proxy_groups["proxy-groups"]]
         f.write("\n\n")
         with open("./config/rule-providers.yaml") as rp:
             rule_providers = load(rp, Loader=SafeLoader)
