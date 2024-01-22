@@ -6,7 +6,7 @@ config:
     priority: 2
   -
     name: GoogleFCM
-    policy: PROXY
+    policy: DIRECT
     inline: true
     priority: 1
   -
