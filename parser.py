@@ -17,8 +17,6 @@ def merge_rules(rule_providers):
     if custom and "rules" in custom:
         rules += custom["rules"]
     rp = rule_providers["rule-providers"]
-    if rp["AdBlock"]:
-        rules.append("RULE-SET,AdBlock,DENIED")
     if "config" in rule_providers:
         config = rule_providers["config"]
         # Order Ruleset

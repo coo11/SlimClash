@@ -3,16 +3,20 @@ config:
     name: Lan
     policy: DIRECT
     inline: true
-    priority: 2
+    priority: 3
   -
     name: GoogleFCM
     policy: DIRECT
     inline: true
-    priority: 1
+    priority: 2
   -
     name: Telegram
     policy: PROXY
     inline: true
+    priority: 2
+  -
+    name: AdBlock
+    policy: DENIED
     priority: 1
   -
     name: TikTok
