@@ -73,7 +73,7 @@ jobs:
           mv geodb SlimClash/.clash/country.mmdb
           
           pip install pyyaml
-          python parser.py
+          python _parser.py
           
           vim output.yaml -c "set ff=dos" -c ":wq"
           mv output.yaml SlimClash/.clash/config.yaml
