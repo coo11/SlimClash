@@ -27,33 +27,32 @@ jobs:
           done
       - name: Download and Uncompress
         run: |
-          # clash=$(
-          #   curl -s 'https://api.github.com/repos/Dreamacro/clash/releases/tags/premium' | \
-          #   python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64') > -1]; print(src['name'].split(' ')[1] + ';' + urls[0])"
-          # )
-          # release_mark=$(echo $clash|cut -d ";" -f 1)
-          release_mark="last version"
-          # release_title="SlimClash ${release_mark}.zip"
-          release_title="SlimClash upstream ran away TAT"
+          clash=$(
+            curl -s 'https://api.github.com/repos/MetaCubeX/mihomo/releases/latest' | \
+            python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64-v') > -1]; print(src['tag_name'] + ';' + urls[0])"
+            )
+          release_mark=$(echo $clash|cut -d ";" -f 1)
+          release_title="SlimClash ${release_mark}.zip"
           
-          RELEASE_DESC="> Based on Clash Premium ${release_mark}, only packaged version amd64 for Windows.
+          RELEASE_DESC="> Based on Clash.Meta ${release_mark}, only packaged version amd64 for Windows.
           ## Related Links
-          - [Original Release](https://github.com/Dreamacro/clash/releases/tag/premium)
-          - [Dashboard Repo](https://github.com/Dreamacro/clash-dashboard)
-          - [GeoIP2 · CN](https://github.com/Hackl0us/GeoIP2-CN)"
+          - [Original Release](https://github.com/MetaCubeX/mihomo/releases/latest)
+          - [Dashboard Repo](https://github.com/MetaCubeX/metacubexd)
+          - [GeoIP 规则文件加强版](https://github.com/Loyalsoldier/geoip)"
           
           echo 'RELEASE_DESC<<EOF' >> $GITHUB_ENV
           echo "$RELEASE_DESC" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
           echo "RELEASE_TITLE=$release_title" >> $GITHUB_ENV
 
-          # curl -Loclash.zip $(echo $clash | cut -d ";" -f 2)
-          curl -Loclash.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-premium-windows-amd64_2023-9-20.zip
-          7z x clash.zip # clash.zip/clash-windows-amd64.exe
-          # curl -Lodashboard.zip https://github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip
-          curl -Lodashboard.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-dashboard-gh-pages.zip
+          curl -Loclash.zip $(echo $clash | cut -d ";" -f 2)
+          # curl -Loclash.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-premium-windows-amd64_2023-9-20.zip
+          7z x clash.zip # clash.zip/mihomo-windows-amd64.exe
+          curl -Lodashboard.zip https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip
+          # curl -Lodashboard.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-dashboard-gh-pages.zip
           7z x dashboard.zip
-          curl -Logeodb https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
+          curl -Logeodb https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
+          curl -Loasn https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-asn.mmdb
           curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip
           7z x wt.zip
       - name: Compile config.js
@@ -68,9 +67,10 @@ jobs:
       - name: Pack related files
         run: |
           mkdir -p SlimClash/.clash/dashboard/../ruleset/../../.utils/
-          mv clash-windows-amd64.exe SlimClash/clash.exe
-          mv clash-dashboard-gh-pages/ -T SlimClash/.clash/dashboard/
+          mv mihomo-windows-amd64.exe SlimClash/clash.exe
+          mv metacubexd-gh-pages/ -T SlimClash/.clash/dashboard/
           mv geodb SlimClash/.clash/country.mmdb
+          mv asn SlimClash/.clash/ASN.mmdb
           
           pip install pyyaml
           python _parser.py

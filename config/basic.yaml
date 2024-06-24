@@ -2,24 +2,35 @@ port: 7890
 socks-port: 5678
 mixed-port: 6789
 allow-lan: false
-mode: rule               # rule / global / direct / script
-log-level: info          # silent / error / warning / info / debug
+mode: rule                # rule / global / direct
+log-level: info           # silent / error / warning / info / debug
+find-process-mode: strict # 
 external-controller: 127.0.0.1:9090
-external-ui: ./dashboard # http://{external-controller}/ui
-ipv6: false
+external-ui: ./dashboard  # http://{external-controller}/ui
+external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+ipv6: true
+geodata-mode: true
+geo-auto-update: true
+geo-update-interval: 168   # hour
+geox-url:
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  mmdb: "https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb"
+  asn: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-asn.mmdb"
 dns:
   enable: true
-  ipv6: false
+  prefer-h3: false
+  use-hosts: true
+  use-system-hosts: true
+  respect-rules: false
   listen: 0.0.0.0:53
-  nameserver-policy:
-   #'265.com': '114.114.114.114'
+  ipv6: false
   default-nameserver:
     - 119.29.29.29
     - 223.5.5.5
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  use-hosts: true
-  fake-ip-filter:        # Reference: https://github.com/vernesong/OpenClash
+  fake-ip-filter:         # Reference: https://github.com/vernesong/OpenClash
     # LAN
     - '*.lan'
     - '*.localdomain'
@@ -76,6 +87,10 @@ dns:
     - '+.stun.*.*'
     - '+.stun.*.*.*'
     - '+.stun.*.*.*.*'
+  nameserver-policy:
+    "geosite:cn,private":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
   nameserver:
     - 223.5.5.5
     - https://223.5.5.5/dns-query
@@ -84,17 +99,11 @@ dns:
   fallback:
     - https://dns.google/dns-query
     - tcp://1.1.1.1
+  proxy-server-nameserver:
+    - https://doh.pub/dns-query
   fallback-filter:
     geoip: true
     geoip-code: CN
-    ipcidr:
-      - 240.0.0.0/4
-   #domain:
-     #- '+.google.com'
 tun:
   enable: false
-  stack: system          # or gvisor
-  auto-route: true
-  auto-detect-interface: true
-  dns-hijack:
-    - tcp://8.8.8.8:53
+  stack: system           # or gvisor
