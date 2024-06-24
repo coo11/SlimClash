@@ -2,7 +2,7 @@ proxies:
   - { "name": "Placeholder", "type": "http", "server": "127.0.0.1:1080", "port": 80 }
 
 proxy-groups:
-  - {"name":"JP","type":"fallback","interval":300,"url":"http://connectivitycheck.gstatic.com/generate_204","proxies":["Placeholder"]}
+  - {"name":"JP","type":"select","proxies":["Placeholder"]}
   - {"name":"HK","type":"select","proxies":["Placeholder"]}
   - {"name":"TW","type":"select","proxies":["Placeholder"]}
   - {"name":"US","type":"select","proxies":["Placeholder"]}

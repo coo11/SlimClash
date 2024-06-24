@@ -1,7 +1,7 @@
 rules:
   # PROCESS
-  - PROCESS-NAME,firefox.exe,US
-  - PROCESS-NAME,org.mozilla.firefox,US
+  - PROCESS-NAME,firefox.exe,JP
+  - PROCESS-NAME,org.mozilla.firefox,JP
   
   # EHentai
   # https://ehwiki.org/wiki/IPs#Table
@@ -53,6 +53,7 @@ rules:
   - DOMAIN-SUFFIX,wixmp.com,PROXY
   
   # ACG
+  - DOMAIN,acg.rip,PROXY
   - DOMAIN-SUFFIX,178.com,DIRECT
   - DOMAIN,mangadex.org,PROXY
   - DOMAIN-SUFFIX,mangadex.network,PROXY
@@ -189,6 +190,7 @@ rules:
   - DOMAIN-SUFFIX,dcard.tw,PROXY
   
   # BT
+  - DOMAIN,libtorrent.org,DIRECT
   - DOMAIN-KEYWORD,torrentkitty,DIRECT
   - DOMAIN,www.torkitty.com,DIRECT
   - DOMAIN,www.xunleiso.com,DIRECT

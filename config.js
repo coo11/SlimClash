@@ -40,8 +40,8 @@ function deduplicate(nodes) {
 }
 
 function generateGroup(nodes, groups) {
-  let code = ["JP", "HK", "TW", "US", "EA", "XX"],
-    regexList = [/日本/, /深港|香港/, /台湾|彰化/, /美国/, /韩国|新加坡|狮城/],
+  let code = ["JP", "TW", "HK", "US", "EA", "XX"],
+    regexList = [/日本/, /台湾|彰化/, /广港|深港|香港/, /美国/, /韩国|新加坡|狮城/],
     newGroups = code.map(i => {
       return { name: i, proxies: [] };
     });
