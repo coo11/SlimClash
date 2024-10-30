@@ -82,15 +82,15 @@ rules:
   - DOMAIN-SUFFIX,pximg.net,PROXY
   - DOMAIN-SUFFIX,fanbox.cc,PROXY
   ## Niconico
-  - DOMAIN-SUFFIX,dmc.nico,PROXY
-  - DOMAIN-SUFFIX,nicovideo.jp,PROXY
-  - DOMAIN-SUFFIX,nimg.jp,PROXY
-  - DOMAIN-SUFFIX,socdm.com,PROXY
-  - DOMAIN-SUFFIX,nicodic.jp,PROXY
-  - DOMAIN-SUFFIX,nicomanga.jp,PROXY
-  - DOMAIN-SUFFIX,niconico.com,PROXY
-  - DOMAIN-SUFFIX,nicoseiga.jp,PROXY
-  - DOMAIN-SUFFIX,simg.jp,PROXY
+  - DOMAIN-SUFFIX,dmc.nico,JP
+  - DOMAIN-SUFFIX,nicodic.jp,JP
+  - DOMAIN-SUFFIX,nicomanga.jp,JP
+  - DOMAIN-SUFFIX,niconico.com,JP
+  - DOMAIN-SUFFIX,nicoseiga.jp,JP
+  - DOMAIN-SUFFIX,nicovideo.jp,JP
+  - DOMAIN-SUFFIX,nimg.jp,JP
+  - DOMAIN-SUFFIX,simg.jp,JP
+  - DOMAIN-SUFFIX,socdm.com,JP
 
   # Image Host
   - DOMAIN-SUFFIX,imgur.com,PROXY
@@ -150,7 +150,7 @@ rules:
   - DOMAIN-SUFFIX,foundation.app,PROXY
   - DOMAIN-SUFFIX,imgix.net,PROXY # foundation's image domain
   - DOMAIN-SUFFIX,nexon.com,PROXY
-  - DOMAIN,ygocdb.com,DIRECT
+  # - DOMAIN,ygocdb.com,DIRECT
   - DOMAIN,transfer.sh,DIRECT
   - DOMAIN-SUFFIX,hifini.com,DIRECT
   
