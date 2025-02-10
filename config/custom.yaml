@@ -195,17 +195,17 @@ rules:
   - DOMAIN,www.torkitty.com,DIRECT
   - DOMAIN,www.xunleiso.com,DIRECT
   
-  # AI
+  # LLM
   ## Google
   ## https://ruleset.isagood.day/gemini.conf
   - DOMAIN,ai.google.dev,RESTRICT
-  - DOMAIN,makersuite.google.com,RESTRICT
-  - DOMAIN,generativelanguage.googleapis.com,RESTRICT
   - DOMAIN,alkalimakersuite-pa.clients6.google.com,RESTRICT
+  - DOMAIN-SUFFIX,makersuite.google.com,RESTRICT
   - DOMAIN-SUFFIX,bard.google.com,RESTRICT
   - DOMAIN-SUFFIX,deepmind.com,RESTRICT
   - DOMAIN-SUFFIX,deepmind.google,RESTRICT
   - DOMAIN-SUFFIX,generativeai.google,RESTRICT
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,RESTRICT
   - DOMAIN-SUFFIX,gemini.google.com,RESTRICT
   - DOMAIN-SUFFIX,proactivebackend-pa.googleapis.com,RESTRICT
   ## Claude
@@ -214,6 +214,9 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,RESTRICT
   - DOMAIN-SUFFIX,claude.ai,RESTRICT
 
+  # Misblocked
+  - DOMAIN-SUFFIX,wixstatic.com,PROXY
+  
   # Extra
   # - DOMAIN-SUFFIX,coo11.eu.org,DIRECT
   - DOMAIN,ghproxy.com,DIRECT
