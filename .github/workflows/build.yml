@@ -52,7 +52,7 @@ jobs:
           # curl -Lodashboard.zip https://github.com/coo11/SlimClash/releases/download/runaway/clash-dashboard-gh-pages.zip
           7z x dashboard.zip
           curl -Logeodb https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
-          curl -Loasn https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-asn.mmdb
+          curl -Loasn https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/GeoLite2-ASN.mmdb
           curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip
           7z x wt.zip
       - name: Compile config.js
