@@ -8,7 +8,7 @@ proxy-groups:
   - {"name":"US","type":"select","proxies":["Placeholder"]}
   - {"name":"EA","type":"select","proxies":["Placeholder"]}
   - {"name":"XX","type":"select","proxies":["Placeholder"]}
-  - {"name":"ALL","type":"url-test","interval":7200,"url":"http://www.google.com/blank.html","proxies":["Placeholder"]}
+  - {"name":"ALL","type":"url-test","interval":7200,"url":"https://www.gstatic.com/generate_204","proxies":["Placeholder"]}
   - {"name":"PROXY","type":"select","proxies":["ALL","HK","JP","TW","US","EA","XX","DIRECT"]}
   - {"name":"NATIVE","type":"select","proxies":["DIRECT","ALL","TW","JP","HK"]}
   - {"name":"OSMEDIA","type":"select","proxies":["ALL","TW","JP","HK","US","PROXY"]}
