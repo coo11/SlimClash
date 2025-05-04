@@ -153,6 +153,9 @@ rules:
   # - DOMAIN,ygocdb.com,DIRECT
   - DOMAIN,transfer.sh,DIRECT
   - DOMAIN-SUFFIX,hifini.com,DIRECT
+  ## Truth Social
+  - DOMAIN-SUFFIX,trk.bonsa.net,RESTRICT
+  - DOMAIN-SUFFIX,truthsocial.com,RESTRICT
   
   # Software
   - DOMAIN,www.faststone.org,PROXY
@@ -214,7 +217,8 @@ rules:
   - DOMAIN-SUFFIX,anthropic.com,RESTRICT
   - DOMAIN-SUFFIX,claude.ai,RESTRICT
 
-  # Misblocked
+  # RulesetFix
+  - DOMAIN-SUFFIX,wixsite.com,PROXY
   - DOMAIN-SUFFIX,wixstatic.com,PROXY
   
   # Extra
