@@ -11,20 +11,22 @@ external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-
 ipv6: true
 unified-delay: true
 tcp-concurrent: true
-geodata-mode: true        # true：mmdb / false: dat
+geodata-mode: false        # true：dat / false: mmdb
 geodata-loader: memconservative
 geo-auto-update: true
 geo-update-interval: 168  # hour
 geox-url:
-  # https://raw.githubusercontent.com/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+  # https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat"
   geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat" # Required
   # https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-asn.mmdb
   asn: "https://testingcf.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-asn.mmdb" # Required
   # 2025-05-04 Misunderstanding: I thought setting geodata-mode to true meant only MMDB files (for mmdb and asn) were needed, and otherwise only DAT files (for geoip and geosite).  
   # Actual behavior: Regardless of configuration, Clash always checks for both ASN.mmdb and GeoSite.dat before starting. If asn and geosite are not set, Clash falls back to downloading data from built-in URLs. This is why Clash fails to start in environments without proxy network—it can't retrieve the required GEO files.
   # https://raw.githubusercontent.com/Loyalsoldier/geoip/release/geoip-only-cn-private.dat
-  geoip: "https://testingcf.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip-only-cn-private.dat"
-  # mmdb: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+  # geoip: "https://testingcf.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip-only-cn-private.dat"
+  # Loyalsoldier/geoip geoip-only-cn-private.dat is incompatible with CMFA. Use mmdb instead.
+  # https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
+  mmdb: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-only-cn-private.mmdb"
 profile:
   store-selected: true
   store-fake-ip: true
