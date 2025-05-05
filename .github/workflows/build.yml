@@ -53,7 +53,7 @@ jobs:
           7z x dashboard.zip
           curl -Logeosite https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat
           curl -Logeoip https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
-          curl -Loasn https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-asn.mmdb
+          curl -Loasn https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
           curl -Lowt.zip https://github.com/coo11/SlimClash/releases/download/wintools/win_tools.zip
           7z x wt.zip
       - name: Compile config.js
