@@ -152,7 +152,6 @@ rules:
   - DOMAIN-SUFFIX,nexon.com,PROXY
   # - DOMAIN,ygocdb.com,DIRECT
   - DOMAIN,transfer.sh,DIRECT
-  - DOMAIN-SUFFIX,hifini.com,DIRECT
   ## Truth Social
   - DOMAIN-SUFFIX,trk.bonsa.net,RESTRICT
   - DOMAIN-SUFFIX,truthsocial.com,RESTRICT
