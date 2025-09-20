@@ -2,6 +2,7 @@ rules:
   # PROCESS
   - PROCESS-NAME,firefox.exe,JP
   - PROCESS-NAME,org.mozilla.firefox,JP
+  - PROCESS-NAME,com.miui.weather2,DIRECT
   
   # EHentai
   # https://ehwiki.org/wiki/IPs#Table

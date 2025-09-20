@@ -29,8 +29,9 @@ jobs:
         run: |
           clash=$(
             curl -s 'https://api.github.com/repos/MetaCubeX/mihomo/releases/latest' | \
-            python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64-v') > -1]; print(src['tag_name'] + ';' + urls[0])"
+            python -c "import sys, json; src=json.load(sys.stdin); urls=[i['browser_download_url'] for i in src['assets'] if i['name'].find('windows-amd64-v3') > -1]; print(src['tag_name'] + ';' + urls[0])"
             )
+          echo $clash
           release_mark=$(echo $clash|cut -d ";" -f 1)
           release_title="SlimClash ${release_mark}.zip"
           
@@ -68,7 +69,7 @@ jobs:
       - name: Pack related files
         run: |
           mkdir -p SlimClash/.clash/dashboard/../ruleset/../../.utils/
-          mv mihomo-windows-amd64.exe SlimClash/clash.exe
+          mv "$(ls -t mihomo-windows-amd64*.exe | head -n1)" SlimClash/clash.exe
           mv metacubexd-gh-pages/ -T SlimClash/.clash/dashboard/
           mv geosite SlimClash/.clash/GeoSite.dat
           mv geoip SlimClash/.clash/geoip.metadb
