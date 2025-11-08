@@ -3,7 +3,7 @@ rules:
   - PROCESS-NAME,firefox.exe,JP
   - PROCESS-NAME,org.mozilla.firefox,JP
   - PROCESS-NAME,com.miui.weather2,DIRECT
-  
+
   # EHentai
   # https://ehwiki.org/wiki/IPs#Table
   - DOMAIN,e-hentai.org,PROXY
@@ -28,7 +28,7 @@ rules:
   # - DOMAIN,alt.hentaiverse.org,PROXY
   - DOMAIN,exhentai.org,PROXY
   - DOMAIN-SUFFIX,hath.network,PROXY
-  
+
   # Yandex
   - DOMAIN-SUFFIX,ya.ru,PROXY
   - DOMAIN-SUFFIX,yandex.com,PROXY
@@ -36,7 +36,7 @@ rules:
   - DOMAIN-SUFFIX,yastatic.net,PROXY
   - DOMAIN-SUFFIX,yandex.ru,PROXY
   - DOMAIN,yandex-images.clstorage.net,PROXY
-  
+
   # Booru
   - DOMAIN-SUFFIX,gelbooru.com,PROXY
   - DOMAIN-SUFFIX,donmai.us,PROXY
@@ -47,12 +47,12 @@ rules:
   - DOMAIN-SUFFIX,adtrue.com,DENIED
   - DOMAIN,cdn.anime-pictures.net,PROXY
   - DOMAIN,e-shuushuu.net,PROXY
-  
+
   # DeviantArt
   - DOMAIN-SUFFIX,deviantart.net,PROXY
   - DOMAIN-SUFFIX,deviantart.com,PROXY
   - DOMAIN-SUFFIX,wixmp.com,PROXY
-  
+
   # ACG
   - DOMAIN,acg.rip,PROXY
   - DOMAIN-SUFFIX,178.com,DIRECT
@@ -97,7 +97,7 @@ rules:
   - DOMAIN-SUFFIX,imgur.com,PROXY
   - DOMAIN-SUFFIX,imagebam.com,PROXY
   - DOMAIN,upload.cc,OSMEDIA
-  
+
   # Short URL
   # - DOMAIN,bit.ly,PROXY
   - DOMAIN,bitly.com,PROXY
@@ -105,7 +105,7 @@ rules:
   - DOMAIN,ab.co,PROXY
   - DOMAIN,bbc.in,PROXY
   - DOMAIN,trib.al,PROXY
-  
+
   # Misc
   - DOMAIN-KEYWORD,rule34,PROXY
   - DOMAIN,safebrowsing.googleapis.com,DENIED
@@ -156,7 +156,7 @@ rules:
   ## Truth Social
   - DOMAIN-SUFFIX,trk.bonsa.net,RESTRICT
   - DOMAIN-SUFFIX,truthsocial.com,RESTRICT
-  
+
   # Software
   - DOMAIN,www.faststone.org,PROXY
   - DOMAIN-SUFFIX,ccleaner.com,PROXY
@@ -164,8 +164,8 @@ rules:
   - DOMAIN-SUFFIX,goldwave.com,PROXY
   - DOMAIN-SUFFIX,bitcomet.com,PROXY
   - DOMAIN-SUFFIX,imagemagick.org,PROXY
-  
-  # MainlandIPAccessDenied 
+
+  # MainlandIPAccessDenied
   - DOMAIN-SUFFIX,read01.com,PROXY
   - DOMAIN-SUFFIX,lihkg.com,PROXY
   - DOMAIN-SUFFIX,koushoku.org,DIRECT # HK Banned ?
@@ -179,25 +179,25 @@ rules:
   - DOMAIN,navismithapis.com,JP
   - DOMAIN,p-smith.com,JP
   - DOMAIN-SUFFIX,komiflo.jp,JP
-  
+
   # Forum
   - DOMAIN-SUFFIX,v2ex.com,PROXY
   - DOMAIN,msfn.org,PROXY
   - DOMAIN,2ch.hk,PROXY
-  
+
   # Taiwan
   - DOMAIN-SUFFIX,disp.cc,PROXY
   - DOMAIN-SUFFIX,ptt.cc,PROXY
   - DOMAIN-SUFFIX,pttweb.cc,PROXY
   - DOMAIN-SUFFIX,myptt.cc,PROXY
   - DOMAIN-SUFFIX,dcard.tw,PROXY
-  
+
   # BT
   - DOMAIN,libtorrent.org,DIRECT
   - DOMAIN-KEYWORD,torrentkitty,DIRECT
   - DOMAIN,www.torkitty.com,DIRECT
   - DOMAIN,www.xunleiso.com,DIRECT
-  
+
   # LLM
   ## Google
   ## https://ruleset.isagood.day/gemini.conf
@@ -220,7 +220,8 @@ rules:
   # RulesetFix
   - DOMAIN-SUFFIX,wixsite.com,PROXY
   - DOMAIN-SUFFIX,wixstatic.com,PROXY
-  
+  - DOMAIN,linktr.ee,PROXY
+
   # Extra
   # - DOMAIN-SUFFIX,coo11.eu.org,DIRECT
   - DOMAIN,ghproxy.com,DIRECT
