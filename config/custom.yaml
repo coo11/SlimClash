@@ -1,4 +1,7 @@
 rules:
+  # CDN
+  - DOMAIN,cdn.donmai.us,DIRECT
+
   # PROCESS
   - PROCESS-NAME,firefox.exe,JP
   - PROCESS-NAME,org.mozilla.firefox,JP

@@ -35,7 +35,7 @@ dns:
   prefer-h3: false
   use-hosts: true
   use-system-hosts: true
-  respect-rules: false
+  respect-rules: true
   listen: 0.0.0.0:53
   ipv6: false
   default-nameserver:
@@ -100,20 +100,14 @@ dns:
     - '+.stun.*.*'
     - '+.stun.*.*.*'
     - '+.stun.*.*.*.*'
-  nameserver-policy:
-    "geosite:cn,private":
-      - https://doh.pub/dns-query
-      - https://dns.alidns.com/dns-query
   nameserver:
-    - 223.5.5.5
-    - https://223.5.5.5/dns-query
-    - 119.29.29.29
-    - https://1.12.12.12/dns-query
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
   fallback:
     - https://dns.google/dns-query
-    - tcp://1.1.1.1
+    - https://1.1.1.1/dns-query
   proxy-server-nameserver:
-    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
   fallback-filter:
     geoip: true
     geoip-code: CN
