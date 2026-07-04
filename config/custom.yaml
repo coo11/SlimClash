@@ -1,6 +1,6 @@
 rules:
   # CDN
-  - DOMAIN,cdn.donmai.us,DIRECT
+  # - DOMAIN,cdn.donmai.us,DIRECT
 
   # PROCESS
   - PROCESS-NAME,firefox.exe,JP
