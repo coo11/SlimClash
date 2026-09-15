@@ -1,0 +1,60 @@
+rules:
+  # https://github.com/Niklaus88/Clash-Config/blob/7e5945caa1ac685324122a4b48a576d76f39fd74/clash-config.yaml#L469-L479
+  # https://v2ex.com/t/1241564
+  - DST-PORT,3478,REJECT-DROP
+  - DST-PORT,5349,REJECT-DROP
+  - DST-PORT,19302,REJECT-DROP
+  - DST-PORT,19303,REJECT-DROP
+  - DST-PORT,19304,REJECT-DROP
+  - DST-PORT,19305,REJECT-DROP
+  - DST-PORT,19306,REJECT-DROP
+  - DST-PORT,19307,REJECT-DROP
+  - DST-PORT,19308,REJECT-DROP
+  - DST-PORT,19309,REJECT-DROP
+  - DOMAIN-KEYWORD,stun,REJECT-DROP
+
+  - GEOSITE,category-ads-all,DENIED
+  - RULE-SET,ADBlock,DENIED
+  - GEOSITE,private,DIRECT
+  - GEOIP,private,DIRECT,no-resolve
+  - GEOSITE,tracker,DIRECT
+
+  - PROCESS-NAME,firefox.exe,JP
+  - PROCESS-NAME,org.mozilla.firefox,JP
+
+  # - GEOSITE,category-public-tracker,DIRECT
+  - GEOSITE,category-speedtest,SpeedTest
+
+  - GEOSITE,category-ai-!cn,AI
+
+  # - GEOSITE,googlefcm,PROXY
+  - GEOSITE,apple-cn,DIRECT
+  - GEOSITE,icloud,DIRECT
+  - GEOSITE,steam@cn,DIRECT
+  - GEOSITE,microsoft@cn,DIRECT
+  - GEOSITE,onedrive,DIRECT
+  - GEOSITE,microsoft,PROXY
+  - GEOSITE,github,PROXY
+
+  - GEOSITE,youtube,PROXY
+  - GEOSITE,google,PROXY
+  - GEOSITE,telegram,PROXY
+  - GEOIP,google,PROXY,no-resolve
+  - GEOIP,telegram,PROXY,no-resolve
+  - GEOIP,facebook,PROXY,no-resolve
+  - GEOIP,twitter,PROXY,no-resolve
+  - GEOSITE,category-social-media-!cn,PROXY
+
+  - GEOSITE,bilibili,DIRECT
+  - GEOIP,bilibili,DIRECT,no-resolve
+  - GEOSITE,biliintl,PROXY
+
+  # https://www.aloxaf.com/2025/04/how_to_use_geosite/#正确用法 #🟢
+  # - GEOSITE,geolocation-!cn@cn,DIRECT #🟢
+  - GEOSITE,geolocation-!cn,PROXY
+  # - GEOSITE,geolocation-cn@!cn,PROXY #🟢
+  - GEOSITE,geolocation-cn,DIRECT
+  - GEOSITE,cn,DIRECT
+
+  - GEOIP,cn,DIRECT
+  - MATCH,FINAL

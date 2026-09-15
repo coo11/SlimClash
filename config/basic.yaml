@@ -1,116 +1,145 @@
-port: 7890
-socks-port: 5678
-mixed-port: 6789
+# Anchors
+Proxy_first: &Proxy_first { type: select, proxies: [PROXY, HK, JP, TW, US, EA, EU, ALL, DIRECT] }
+Direct_first: &Direct_first { type: select, proxies: [DIRECT, PROXY, HK, JP, TW, US, EA, EU, ALL] }
+###
+Proxy_providers: &Proxy_providers { type: http, interval: 86400, health-check: { enable: true, url: https://cp.cloudflare.com, interval: 300 } }
+###
+Sub_all: &Sub_all { use: [s1], type: select }
+Sub_main: &Sub_main { use: [s1], type: select }
+##############################################
+proxy-providers:
+  s1:
+    url: ""
+    path: ./proxy_provider/s1.yaml
+    lazy: true
+    <<: *Proxy_providers
+
+  #s2:
+  #  url: ''
+  #  path: ./proxy_provider/s2.yaml
+  #  <<: *Proxy_providers
+  #  override:
+  #    additional-prefix: '🟠 '
+##############################################
+proxies:
+  - { name: DEFAULT, type: direct, udp: true }
+
+proxy-groups:
+  - { name: PROXY, type: select, proxies: [HK, JP, TW, US, EA, XX, URLTest] }
+  - { name: AI, type: select, proxies: [US, JP, EA, XX, TW, HK, PROXY] }
+  - { name: HK, <<: *Sub_all, filter: "(?i)(🇭🇰|港|HK|hong)", exclude-filter: "美|日|台" }
+  - { name: JP, <<: *Sub_all, filter: "(?i)(🇯🇵|日|JP|japan|tokyo|osaka)", url: "https://danbooru.donmai.us/up", tolerance: 20, interval: 600, lazy: true, timeout: 5000 }
+  - { name: US, <<: *Sub_all, filter: "(?i)(🇺🇸|美|USA?|united\\s?states|洛杉矶|达拉斯|西雅图)" }
+  - { name: TW, <<: *Sub_all, filter: "(?i)(🇹🇼|台|臺|TW|taiwan)" }
+  - { name: EA, <<: *Sub_all, filter: "(?i)(🇸🇬|新|SG|singapore|🇰🇷|韩|KR|korea)" }
+  - { name: XX, <<: *Sub_all, exclude-filter: "(?i)(🇭🇰|🇯🇵|🇺🇸|🇹🇼|🇸🇬|🇰🇷|港|日|美|台|新|韩|HK|JP|USA?|TW|KR|DEFAULT)" }
+  - { name: URLTest, <<: *Sub_main, type: url-test, url: "https://www.gstatic.com/generate_204", tolerance: 20, interval: 600, max-failed-times: 1, hidden: true, lazy: true }
+  - { name: RESTRICT, type: select, proxies: [US, JP, EA, XX, TW, HK, PROXY] }
+  - { name: DENIED, type: select, proxies: [REJECT, REJECT-DROP, PASS, DIRECT, PROXY] }
+  - { name: SpeedTest, type: select, proxies: [PASS, DIRECT, PROXY] }
+  - { name: FINAL, type: select, proxies: [DIRECT, PROXY] }
+  - { name: GLOBAL, type: select, proxies: [PROXY, HK, JP, TW, US, EA, XX, URLTest, AI, RESTRICT, DENIED, SpeedTest, FINAL, DIRECT] }
+##############################################
+rule-providers:
+  ADBlock:
+    type: http
+    behavior: domain
+    interval: 86400
+    format: yaml
+    path: ./ruleset/AWAvenue_Ads_Rule_Clash.yaml
+    url: "https://gcore.jsdelivr.net/gh/TG-Twilight/AWAvenue-Ads-Rule@main/Filters/AWAvenue-Ads-Rule-Clash.yaml"
+##############################################
+# Configuration options that are commented out are usually the default values.
+
+mixed-port: 7890
 allow-lan: false
-mode: rule                # rule / global / direct
-log-level: info           # silent / error / warning / info / debug
-find-process-mode: strict # 
-external-controller: 127.0.0.1:9090
-external-ui: ./dashboard  # http://{external-controller}/ui
-external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
-ipv6: true
+log-level: info # silent / error / warning / info / debug
 unified-delay: true
 tcp-concurrent: true
-geodata-mode: false        # true：dat / false: mmdb
-geodata-loader: memconservative
-geo-auto-update: true
-geo-update-interval: 168  # hour
-geox-url:
-  # https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/release/geosite.dat"
-  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat" # Required
-  # https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb
-  asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb" # Required
-  # 2025-05-04 Misunderstanding: I thought setting geodata-mode to true meant only MMDB files (for mmdb and asn) were needed, and otherwise only DAT files (for geoip and geosite).  
-  # Actual behavior: Regardless of configuration, Clash always checks for both ASN.mmdb and GeoSite.dat before starting. If asn and geosite are not set, Clash falls back to downloading data from built-in URLs. This is why Clash fails to start in environments without proxy network—it can't retrieve the required GEO files.
-  # https://raw.githubusercontent.com/Loyalsoldier/geoip/release/geoip-only-cn-private.dat
-  # geoip: "https://testingcf.jsdelivr.net/gh/Loyalsoldier/geoip@release/geoip-only-cn-private.dat"
-  # Loyalsoldier/geoip geoip-only-cn-private.dat is incompatible with CMFA. Use mmdb instead.
-  # https://raw.githubusercontent.com/Loyalsoldier/geoip/release/Country-only-cn-private.mmdb
-  mmdb: "https://cdn.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-only-cn-private.mmdb"
+# CFMA Issue: You must set external controller in app.
+# https://github.com/MetaCubeX/ClashMetaForAndroid/blob/251a013b18f16c1077fcbad9dd7c855d8e1e97f4/core/src/main/golang/native/config/process.go#L44
+external-controller: 127.0.0.1:9090
+external-ui: ./dashboard
+external-ui-url: https://github.com/Zephyruso/zashboard/releases/latest/download/dist.zip
+# external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
 profile:
   store-selected: true
   store-fake-ip: true
+
+# GeoSite Viewer: https://geoviewer.aloxaf.com/
+# Geo File Viewer: https://jomertix.github.io/geofileviewer/
+geodata-mode: true # Has nothing with GEOSite or ASN: true：geoip.dat / false: geoip.metadb #🟣
+geodata-loader: standard # memconservative
+geo-auto-update: true
+geo-update-interval: 24 # hour
+geox-url:
+  geosite: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat" # Required
+  # asn: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb"
+  # geoip and mmdb: One of them is required! #🟣
+  geoip: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip-lite.dat"
+  # mmdb: "https://testingcf.jsdelivr.net/gh/Loyalsoldier/geoip@release/Country-only-cn-private.mmdb"
+
 dns:
   enable: true
+  cache-algorithm: arc
   prefer-h3: false
-  use-hosts: true
-  use-system-hosts: true
   respect-rules: true
   listen: 0.0.0.0:53
-  ipv6: false
-  default-nameserver:
-    - 119.29.29.29
-    - 223.5.5.5
+  ipv6: true
   enhanced-mode: fake-ip
   fake-ip-range: 198.18.0.1/16
-  fake-ip-filter:         # Reference: https://github.com/vernesong/OpenClash
-    # LAN
-    - '*.lan'
-    - '*.localdomain'
-    - '*.example'
-    - '*.invalid'
-    - '*.localhost'
-    - '*.test'
-    - '*.local'
-    - '*.home.arpa'
-    # Router
-    - '*.linksys.com'
-    - '*.linksyssmartwifi.com'
-    - '*.router.asus.com'
-    - '+.miwifi.com'
-    # NTP Service
-    - 'time.*.com'
-    - 'time.*.gov'
-    - 'time.*.edu.cn'
-    - 'time.*.apple.com'
-    - 'ntp.*.com'
-    - '*.time.edu.cn'
-    - '*.ntp.org.cn'
-    - '+.pool.ntp.org'
-    - time1.cloud.tencent.com
-    # Music Service
-    ## QQ
-    - '+.y.qq.com'
-    - '+.music.tc.qq.com'
-    - aqqmusic.tc.qq.com
-    - '+.stream.qqmusic.qq.com'
-    ## NetEase
-    - '+.music.163.com'
-    - '*.126.net'
-    # Game Service
-    ## Nintendo Switch
-    - '+.srv.nintendo.net'
-    ## Xbox
-    - 'xbox.*.microsoft.com'
-    - '+.xboxlive.com'
-    ## Konami Master Duel
-    - '*.mo.konami.net'
-    # Other
-    - '*.cn'
-    - '+.nflxvideo.net'
-    # Windows
-    - '+.msftconnecttest.com'
-    - '+.msftncsi.com'
-    ## QQ Quick Login
-    - localhost.ptlogin2.qq.com
-    - localhost.sec.qq.com
-    ## Golang
-    - proxy.golang.org
-    ## STUN Server
-    - '+.stun.*.*'
-    - '+.stun.*.*.*'
-    - '+.stun.*.*.*.*'
-  nameserver:
-    - https://doh.pub/dns-query
-    - https://dns.alidns.com/dns-query
-  fallback:
-    - https://dns.google/dns-query
-    - https://1.1.1.1/dns-query
+  fake-ip-filter:
+    - geosite:connectivity-check,category-games@cn,private
+    - +.market.xiaomi.com
+    - +.push.apple.com
+    ## Yu-Gi-Oh! Master Duel
+    # - +.mo.konami.net
+  default-nameserver: [223.5.5.5, 180.184.1.1]
   proxy-server-nameserver:
     - https://dns.alidns.com/dns-query
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
+    - https://doh.pub/dns-query
+  direct-nameserver-follow-policy: true
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  nameserver:
+    - https://dns.google/dns-query
+    - https://cloudflare-dns.com/dns-query
+  nameserver-policy:
+    "geosite:category-ads-all": rcode://success
+  # fallback: `fallback` is no use if `direct-nameserver` and overseas `nameserver` configured.
+
+# TUN mode has been forcibly disabled by CFMA and taken over by Android VpnService.
+# https://github.com/MetaCubeX/ClashMetaForAndroid/blob/251a013b18f16c1077fcbad9dd7c855d8e1e97f4/core/src/main/golang/native/config/process.go#L87
 tun:
-  enable: false
-  stack: system           # or gvisor
+  enable: true
+  stack: mixed # Need to set up manually in CFMA
+  dns-hijack: [any:53, tcp://any:53]
+  auto-route: true
+  auto-redirect: true
+  auto-detect-interface: true
+
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  force-domain:
+    - "*.v2ex.com"
+  skip-domain:
+    - Mijia Cloud
+    - "dlg.io.mi.com"
+    - "*.push.apple.com"
+    - "*.apple.com"
+    - "*.wechat.com"
+    - "*.qpic.cn"
+    - "*.qq.com"
+    - "*.wechatapp.com"
+    - "*.vivox.com"
+    - "*.oray.com"
+    - "*.sunlogin.net"

@@ -1,0 +1,90 @@
+rules:
+  # Danbooru
+  # - DOMAIN,cdn.donmai.us,DIRECT
+  - AND,((PROCESS-NAME,firefox.exe),(DOMAIN-SUFFIX,donmai.us)),JP
+  - AND,((PROCESS-NAME,firefox.exe),(DOMAIN,donmai.moe)),JP
+  - AND,((PROCESS-NAME,org.mozilla.firefox),(DOMAIN-SUFFIX,donmai.us)),JP
+  - AND,((PROCESS-NAME,org.mozilla.firefox),(DOMAIN,donmai.moe)),JP
+  - DOMAIN-SUFFIX,donmai.us,PROXY
+  - DOMAIN,donmai.moe,PROXY
+
+  # PROCESS
+  - PROCESS-NAME,com.miui.weather2,DIRECT
+
+  # ACG
+  - DOMAIN,mangadex.org,PROXY
+  - DOMAIN-SUFFIX,mangadex.network,PROXY
+  - DOMAIN-SUFFIX,wnacg.com,PROXY
+  - DOMAIN-SUFFIX,wnacg.org,PROXY
+  - DOMAIN-SUFFIX,wnacg.download,PROXY
+  - DOMAIN-SUFFIX,cangku.life,PROXY
+  - DOMAIN-SUFFIX,wani.com,PROXY
+  - DOMAIN-SUFFIX,fakku.net,PROXY
+  ## Soul-plus
+  - DOMAIN-SUFFIX,soul-plus.net,PROXY
+  - DOMAIN-SUFFIX,south-plus.net,PROXY
+  - DOMAIN-SUFFIX,north-plus.net,PROXY
+  - DOMAIN-SUFFIX,east-plus.net,PROXY
+  - DOMAIN-SUFFIX,level-plus.net,PROXY
+  - DOMAIN-SUFFIX,spring-plus.net,PROXY
+  - DOMAIN-SUFFIX,summer-plus.net,PROXY
+  - DOMAIN-SUFFIX,snow-plus.net,PROXY
+  - DOMAIN-SUFFIX,white-plus.net,PROXY
+  - DOMAIN-SUFFIX,blue-plus.net,PROXY
+  - DOMAIN,bbs.imoutolove.me,PROXY
+  ## Niconico
+  - DOMAIN-SUFFIX,dmc.nico,JP
+  - DOMAIN-SUFFIX,nicodic.jp,JP
+  - DOMAIN-SUFFIX,nicomanga.jp,JP
+  - DOMAIN-SUFFIX,niconico.com,JP
+  - DOMAIN-SUFFIX,nicoseiga.jp,JP
+  - DOMAIN-SUFFIX,nicovideo.jp,JP
+  - DOMAIN-SUFFIX,nimg.jp,JP
+  - DOMAIN-SUFFIX,simg.jp,JP
+
+  # Short URL
+  - DOMAIN,ab.co,PROXY
+  - DOMAIN,trib.al,PROXY
+
+  # Misc
+  - DOMAIN-KEYWORD,rule34,PROXY
+  - DOMAIN-SUFFIX,neverssl.com,DIRECT
+  # - DOMAIN,ping.pe,PROXY
+  - DOMAIN-SUFFIX,dropmail.me,PROXY
+  - DOMAIN-SUFFIX,fc2.com,PROXY
+  - DOMAIN,ss64.com,PROXY
+  - DOMAIN-SUFFIX,bing.com,PROXY
+  # - DOMAIN-SUFFIX,bing.net,PROXY
+  - DOMAIN,rentry.co,PROXY
+  # - DOMAIN,ygocdb.com,DIRECT
+  ## Truth Social
+  - DOMAIN-SUFFIX,trk.bonsa.net,RESTRICT
+  - DOMAIN-SUFFIX,truthsocial.com,RESTRICT
+
+  # Software
+  - DOMAIN-SUFFIX,bitcomet.com,PROXY
+  - DOMAIN-SUFFIX,imagemagick.org,PROXY
+
+  # MainlandIPAccessDenied
+  - DOMAIN-SUFFIX,read01.com,PROXY
+  - DOMAIN-SUFFIX,5ch.net,PROXY
+  - DOMAIN-SUFFIX,dmm.com,JP
+  - DOMAIN-SUFFIX,dmm.co.jp,JP
+  - DOMAIN-SUFFIX,dmm-extension.com,JP
+  - DOMAIN-SUFFIX,dmmgames.com,JP
+  - DOMAIN,navismithapis-cdn.com,JP
+  - DOMAIN,navismithapis.com,JP
+  - DOMAIN,p-smith.com,JP
+  - DOMAIN-SUFFIX,komiflo.jp,JP
+
+  # Taiwan
+  - DOMAIN-SUFFIX,pttweb.cc,PROXY
+  - DOMAIN-SUFFIX,myptt.cc,PROXY
+
+  # BT
+  - DOMAIN,www.torkitty.com,DIRECT
+  - DOMAIN,www.xunleiso.com,DIRECT
+
+  # Extra
+  # - DOMAIN-SUFFIX,coo11.eu.org,DIRECT
+  - DOMAIN,ghproxy.com,DIRECT

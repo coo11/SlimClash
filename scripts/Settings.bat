@@ -1,6 +1,6 @@
 SETLOCAL enabledelayedexpansion
 @ECHO off
-MODE con lines=13 cols=56
+MODE con lines=9 cols=56
 COLOR 0A
 CD /D %~dp0
 TITLE Clash Settings
@@ -12,30 +12,22 @@ ECHO  3. 设为 IE 代理
 ECHO  4. 取消设为 IE 代理
 ECHO  5. 排除全部 UWP 应用 Loopback 限制
 ECHO  6. 恢复全部 UWP 应用 Loopback 限制
-ECHO  7. 获取/更新 GeoLite
-ECHO  8. 获取/更新 Dashboard
-ECHO  9. 更新订阅
-ECHO  A. 更新规则
 ECHO  ======================================================
 :: 选择菜单
 :: Use xcopy to retrieve the key press: https://stackoverflow.com/a/27257111/14168341
-<nul set /p ".=请输入 0-9 选择，其它键退出："
+<nul set /p ".=请输入 0-6 选择，其它键退出："
 SET "choix=" & for /f "delims=" %%a in ('xcopy /l /w "%~f0" "%~f0" 2^>nul') DO IF not defined choix set "choix=%%a"
 SET "choix=%choix:~-1%"
-FOR %%i in ( 1 2 3 4 5 6 7 8 9 0 ) DO IF %choix%==%%i ECHO %choix% && TIMEOUT /NOBREAK /T 1 >NUL
+FOR %%i in ( 1 2 3 4 5 6 ) DO IF %choix%==%%i ECHO %choix% && TIMEOUT /NOBREAK /T 1 >NUL
 CLS
 ECHO.
-IF /i "%choix%"=="0" "%~dp0.utils\EnableLoopback.exe" && GOTO HEAD
+IF /i "%choix%"=="0" "%~dp0EnableLoopback.exe" && GOTO HEAD
 IF /i "%choix%"=="1" GOTO STARTUP
 IF /i "%choix%"=="2" GOTO NOSTARTUP
 IF /i "%choix%"=="3" GOTO PROXY
 IF /i "%choix%"=="4" GOTO NOPROXY
 IF /i "%choix%"=="5" GOTO UNBLOCK
 IF /i "%choix%"=="6" GOTO BLOCK
-IF /i "%choix%"=="7" GOTO GOEIP
-IF /i "%choix%"=="8" GOTO DASHBOARD
-IF /i "%choix%"=="9" GOTO UPDATESUBS
-IF /i "%choix%"=="A" GOTO UPDATERULES
 EXIT
 
 :STARTUP
@@ -78,57 +70,6 @@ GOTO BACK
 
 :BLOCK
 CheckNetIsolation.exe LoopbackExempt -c
-GOTO BACK
-
-:GOEIP
-:: GeoLite2-Country.mmdb
-:: .tar.gz:
-:: Format: https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=${LICENSE_KEY}&suffix=tar.gz
-CD "%~DP0.utils\"
-:: curl -o gl2c.tar.gz "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-Country&license_key=uSKs4zivaWMD8N6j&suffix=tar.gz" && 7za.exe e gl2c.tar.gz && 7za e gl2c.tar "GeoLite2-Country*\GeoLite2-Country.mmdb" -aoa && move /Y GeoLite2-Country.mmdb ..\.clash\Country.mmdb && del gl2c.tar* /F /Q
-:: .mmdb:
-:: Clash itself: https://github.com/Dreamacro/maxmind-geoip/raw/release/Country.mmdb
-:: Hackl0us GeoIP2-CN:  https://github.com/Hackl0us/GeoIP2-CN/raw/release/Country.mmdb
-curl -o GeoLite2-Country.mmdb "https://ghproxy.com/raw.githubusercontent.com/Hackl0us/GeoIP2-CN/release/Country.mmdb" && move /Y GeoLite2-Country.mmdb ..\.clash\Country.mmdb
-PAUSE
-GOTO BACK
-
-:DASHBOARD
-CD "%~DP0.utils\"
-:: https://github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip
-curl -o cd.zip "https://ghproxy.com/github.com/Dreamacro/clash-dashboard/archive/refs/heads/gh-pages.zip" && rd ..\.clash\dashboard /S /Q & 7za x cd.zip -aoa && xcopy .\clash-dashboard-gh-pages ..\.clash\dashboard\ /Y /E && rd .\clash-dashboard-gh-pages /S /Q & del cd.zip /F /Q
-PAUSE
-GOTO BACK
-
-:UPDATESUBS
-ECHO  您可以通过两种方式更新机场订阅。
-ECHO  获取订阅链接后：
-ECHO  ①在根目录下打开或新建一个文本文件
-ECHO   Subs.txt，一行填写一条订阅链接，
-ECHO  保存后即可在此界面按任意键更新；
-ECHO  ②进入目录 .utils，在此目录下执行
-ECHO  命令 `config.exe [Link1] [Link2]...`
-ECHO  即可（注意链接参数以空格隔开）。
-ECHO  ======================================================
-PAUSE
-CLS
-ECHO  尝试请求订阅链接......
-CD "%~DP0.utils\"
-config.exe
-PAUSE
-GOTO BACK
-
-:UPDATERULES
-ECHO  当 Clash 因为无法更新规则无法
-ECHO  启动时，可以通过此方式主动对
-ECHO  规则进行更新。也可进入目录 
-ECHO  .utils，在此目录下执行
-ECHO  命令 `config.exe -d` 即可。
-ECHO  ======================================================
-ECHO  尝试请求订阅规则......
-CD "%~DP0.utils\"
-config.exe -d
-PAUSE
 GOTO BACK
 
 :BACK

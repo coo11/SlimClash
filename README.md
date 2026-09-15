@@ -3,7 +3,7 @@
   <br>SlimClash<br>
 </h1>
 
-<h4 align="center">SlimChash: The slime form of Clash.Meta, without GUI</h4>
+<h4 align="center">SlimChash: The slime form of Clash (Mihomo), without GUI</h4>
 
 <p align="center">
   <a href="https://github.com/coo11/SlimClash/actions">
