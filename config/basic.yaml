@@ -1,4 +1,6 @@
 # Anchors
+Doh_cn: &Doh_cn [https://dns.alidns.com/dns-query, https://doh.pub/dns-query]
+###
 Proxy_first: &Proxy_first { type: select, proxies: [PROXY, HK, JP, TW, US, EA, EU, ALL, DIRECT] }
 Direct_first: &Direct_first { type: select, proxies: [DIRECT, PROXY, HK, JP, TW, US, EA, EU, ALL] }
 ###
@@ -95,18 +97,15 @@ dns:
     ## Yu-Gi-Oh! Master Duel
     # - +.mo.konami.net
   default-nameserver: [223.5.5.5, 180.184.1.1]
-  proxy-server-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+  proxy-server-nameserver: *Doh_cn
   direct-nameserver-follow-policy: true
-  direct-nameserver:
-    - https://dns.alidns.com/dns-query
-    - https://doh.pub/dns-query
+  direct-nameserver: *Doh_cn
   nameserver:
     - https://dns.google/dns-query
     - https://cloudflare-dns.com/dns-query
   nameserver-policy:
-    "geosite:category-ads-all": rcode://success
+    "geosite:category-ads-all": rcode://name_error # rcode://success
+    "geosite:googlefcm": *Doh_cn
   # fallback: `fallback` is no use if `direct-nameserver` and overseas `nameserver` configured.
 
 # TUN mode has been forcibly disabled by CFMA and taken over by Android VpnService.

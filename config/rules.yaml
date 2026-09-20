@@ -27,7 +27,7 @@ rules:
 
   - GEOSITE,category-ai-!cn,AI
 
-  # - GEOSITE,googlefcm,PROXY
+  - GEOSITE,googlefcm,DIRECT
   - GEOSITE,apple-cn,DIRECT
   - GEOSITE,icloud,DIRECT
   - GEOSITE,steam@cn,DIRECT

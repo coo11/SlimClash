@@ -72,4 +72,6 @@ jobs:
           prerelease: false
           name: ${{ env.RELEASE_TITLE }}
           body: ${{ env.RELEASE_DESC }}
-          files: SlimClash.zip
+          files: |
+            SlimClash.zip
+            ./SlimClash/.clash/config.yaml
