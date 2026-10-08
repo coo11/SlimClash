@@ -27,15 +27,17 @@ rules:
 
   - GEOSITE,category-ai-!cn,AI
 
-  - GEOSITE,googlefcm,DIRECT
+  # Prevent Apple Music from redirecting to CN
+  - GEOSITE,apple-music,PROXY
+
   - GEOSITE,apple-cn,DIRECT
   - GEOSITE,icloud,DIRECT
   - GEOSITE,steam@cn,DIRECT
-  - GEOSITE,microsoft@cn,DIRECT
-  - GEOSITE,onedrive,DIRECT
-  - GEOSITE,microsoft,PROXY
   - GEOSITE,github,PROXY
+  - GEOSITE,microsoft@cn,DIRECT
+  - GEOSITE,microsoft,PROXY
 
+  - GEOSITE,googlefcm,DIRECT
   - GEOSITE,youtube,PROXY
   - GEOSITE,google,PROXY
   - GEOSITE,telegram,PROXY
@@ -43,6 +45,7 @@ rules:
   - GEOIP,telegram,PROXY,no-resolve
   - GEOIP,facebook,PROXY,no-resolve
   - GEOIP,twitter,PROXY,no-resolve
+  - GEOSITE,tiktok,RESTRICT
   - GEOSITE,category-social-media-!cn,PROXY
 
   - GEOSITE,bilibili,DIRECT
