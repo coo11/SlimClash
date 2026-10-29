@@ -20,6 +20,7 @@ rules:
   - GEOSITE,tracker,DIRECT
 
   - PROCESS-NAME,firefox.exe,JP
+  - PROCESS-NAME,skykakapo.exe,JP
   - PROCESS-NAME,org.mozilla.firefox,JP
 
   # - GEOSITE,category-public-tracker,DIRECT
@@ -51,6 +52,8 @@ rules:
   - GEOSITE,bilibili,DIRECT
   - GEOIP,bilibili,DIRECT,no-resolve
   - GEOSITE,biliintl,PROXY
+  
+  - GEOSITE,yandex,RESTRICT
 
   # https://www.aloxaf.com/2025/04/how_to_use_geosite/#正确用法 #🟢
   # - GEOSITE,geolocation-!cn@cn,DIRECT #🟢

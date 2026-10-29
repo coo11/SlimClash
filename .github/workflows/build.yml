@@ -30,6 +30,7 @@ jobs:
           {
             echo 'RELEASE_DESC<<EOF'
             echo "> Based on Clash.Meta ${release_mark}, packaged for Windows amd64."
+            echo "> Last batch/vbs version."
             echo "## Related Links"
             echo "- [Original Release](https://github.com/MetaCubeX/mihomo/releases/latest)"
             echo "- Dashboard - [Zashboard](https://github.com/Zephyruso/zashboard)"
@@ -68,7 +69,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: weeklybuild
+          tag_name: lastbatchver
           prerelease: false
           name: ${{ env.RELEASE_TITLE }}
           body: ${{ env.RELEASE_DESC }}
