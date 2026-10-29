@@ -1,0 +1,101 @@
+name: Build and package SlimClash
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 5"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install build and packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 unzip zip
+          sudo apt-get install -y python3-yaml
+
+      - name: Set dated version
+        id: version
+        run: |
+          version="$(python3 script/version.py)"
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build Windows launcher
+        run: |
+          x86_64-w64-mingw32-windres -Isrc src/launcher.rc -O coff -o src/launcher-res.o
+          x86_64-w64-mingw32-gcc -std=c11 -O2 -Wall -Wextra -municode -mwindows \
+            src/launcher.c src/launcher-res.o -o SlimClash.exe -lshell32 -ladvapi32
+
+      - name: Resolve latest Mihomo release
+        id: mihomo
+        shell: bash
+        run: |
+          release="$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest)"
+          tag="$(jq -r '.tag_name' <<< "$release")"
+          url="$(jq -r '[.assets[] | select(.name | contains("windows-amd64-v3"))][0].browser_download_url // empty' <<< "$release")"
+          if [[ -z "$tag" || -z "$url" ]]; then
+            echo "Could not find the latest Windows amd64-v3 Mihomo release asset." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Download Mihomo, dashboard and EnableLoopback
+        env:
+          MIHOMO_URL: ${{ steps.mihomo.outputs.url }}
+        run: |
+          mkdir -p mihomo
+          curl -fsSL "$MIHOMO_URL" -o mihomo.zip
+          unzip -q mihomo.zip -d mihomo
+          mihomo_exe="$(find mihomo -type f -name 'mihomo-windows-amd64*.exe' -print -quit)"
+          if [ -z "$mihomo_exe" ]; then
+            echo "The Mihomo archive did not contain a Windows executable." >&2
+            exit 1
+          fi
+          echo "MIHOMO_EXE=$mihomo_exe" >> "$GITHUB_ENV"
+          mkdir -p dashboard
+          dashboard_url="$(python3 -c 'import yaml; print(yaml.safe_load(open("config/basic.yaml", encoding="utf-8"))["external-ui-url"])')"
+          curl -fsSL "$dashboard_url" -o dashboard.zip
+          unzip -q dashboard.zip -d dashboard
+          curl -fsSLO https://github.com/coo11/SlimClash/releases/download/wintools/EnableLoopback.exe
+
+      - name: Generate configuration and stage package
+        run: |
+          python3 script/_parser.py
+          package="dist/SlimClash"
+          mkdir -p "$package/.clash/dashboard" "$package/.clash/ruleset"
+          cp "$MIHOMO_EXE" "$package/clash.exe"
+          cp "EnableLoopback.exe" "$package/EnableLoopback.exe"
+          cp SlimClash.exe "$package/"
+          cp output.yaml "$package/.clash/config.yaml"
+          cp -a dashboard/. "$package/.clash/dashboard/"
+          cp -a geo_download/. "$package/.clash/"
+          cp -a ruleset_download/ruleset/. "$package/.clash/ruleset/"
+          cd dist
+          zip -qr "SlimClash-${{ steps.version.outputs.value }}.zip" SlimClash
+          cp SlimClash/.clash/config.yaml "config-${{ steps.version.outputs.value }}.yaml"
+
+      - name: Publish weeklybuild release
+        uses: andelf/nightly-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: weeklybuild
+          prerelease: false
+          name: SlimClash ${{ steps.version.outputs.value }} (Mihomo ${{ steps.mihomo.outputs.tag }})
+          body: |
+            > SlimClash version ${{ steps.version.outputs.value }} with Mihomo ${{ steps.mihomo.outputs.tag }}.
+            ## Related Links
+              - [Original Release](https://github.com/MetaCubeX/mihomo/releases/latest)
+              - Dashboard - [Zashboard](https://github.com/Zephyruso/zashboard)
+              - Dashboard - [Official](https://github.com/MetaCubeX/metacubexd)
+          files: |
+            dist/SlimClash-${{ steps.version.outputs.value }}.zip
+            dist/config-${{ steps.version.outputs.value }}.yaml

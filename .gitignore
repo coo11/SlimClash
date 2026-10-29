@@ -1,2 +1,11 @@
-/dist
-/*.yaml
+SlimClash*.exe
+src/launcher-res*.o
+src/version.h
+hide_tray_icon
+dist/
+geo_download/
+ruleset_download/
+output.yaml
+mihomo/
+dashboard/
+*.zip

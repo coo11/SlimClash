@@ -1,0 +1,32 @@
+#define IDI_APP_ICON 101
+
+#include "version.h"
+
+IDI_APP_ICON ICON "asset/icon.ico"
+
+1 VERSIONINFO
+ FILEVERSION VERSION_MAJOR,VERSION_MONTH,VERSION_DAY,0
+ PRODUCTVERSION VERSION_MAJOR,VERSION_MONTH,VERSION_DAY,0
+ FILEFLAGSMASK 0x3fL
+ FILEFLAGS 0
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "SlimClash\0"
+            VALUE "FileVersion", VERSION_STRING "\0"
+            VALUE "InternalName", "SlimClash\0"
+            VALUE "OriginalFilename", "SlimClash.exe\0"
+            VALUE "ProductName", "SlimClash\0"
+            VALUE "ProductVersion", VERSION_STRING "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

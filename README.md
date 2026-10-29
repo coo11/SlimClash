@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/coo11/SlimClash/raw/main/src/logo.png" alt="SlimClash" width="200">
+  <img src="./asset/clash.svg" alt="SlimClash" width="200">
   <br>SlimClash<br>
 </h1>
 
@@ -7,9 +7,12 @@
 
 <p align="center">
   <a href="https://github.com/coo11/SlimClash/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/coo11/SlimClash/build.yml?branch=main&style=flat-square" alt="Github Actions"></a>
-  <img src="https://img.shields.io/badge/PowerShell-%3E=%202.0-brightgreen?style=flat-square">
+    <img src="https://img.shields.io/github/actions/workflow/status/coo11/SlimClash/build.yaml?branch=main&style=flat-square" alt="Github Actions"></a>
   <a href="https://github.com/coo11/SlimClash/releases/tag/weeklybuild">
     <img src="https://img.shields.io/badge/release-WeeklyBuild-00b4f0?style=flat-square">
   </a>
+</p>
+
+<p align="center">
+  <img src="./asset/startup-flow.svg">
 </p>
