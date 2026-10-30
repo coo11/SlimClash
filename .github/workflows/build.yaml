@@ -30,8 +30,9 @@ jobs:
       - name: Build Windows launcher
         run: |
           x86_64-w64-mingw32-windres -Isrc src/launcher.rc -O coff -o src/launcher-res.o
-          x86_64-w64-mingw32-gcc -std=c11 -O2 -Wall -Wextra -municode -mwindows \
-            src/launcher.c src/launcher-res.o -o SlimClash.exe -lshell32 -ladvapi32
+          x86_64-w64-mingw32-gcc -std=c11 -O2 -g0 -Wall -Wextra -municode -mwindows \
+            src/launcher.c src/launcher-res.o -o SlimClash.exe -lshell32 -ladvapi32 -lwinhttp
+          x86_64-w64-mingw32-strip --strip-debug SlimClash.exe
 
       - name: Resolve latest Mihomo release
         id: mihomo

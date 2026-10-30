@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <shellapi.h>
 #include <tlhelp32.h>
+#include <winhttp.h>
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
@@ -28,6 +29,11 @@
 #define MENU_EXIT 1005
 #define MENU_CONSOLE 1006
 #define MENU_HIDE_TRAY 1007
+#define MENU_MODE_DIRECT 1008
+#define MENU_MODE_GLOBAL 1009
+#define MENU_MODE_RULE 1010
+#define MENU_RELOAD_CONFIG 1011
+#define MENU_GITHUB 1012
 #define IDI_APP_ICON 101
 #define AUTOSTART_KEY L"Software\\Microsoft\\Windows\\CurrentVersion\\Run"
 #define AUTOSTART_VALUE L"SlimClash"
@@ -42,9 +48,12 @@ static WCHAR g_config_dir[MAX_PATH];
 static WCHAR g_config_path[MAX_PATH];
 static WCHAR g_hide_tray_path[MAX_PATH];
 static WCHAR g_dashboard_url[512];
+static WCHAR g_controller_url[512];
 static char g_http_port[32];
 static char g_socks_port[32];
 static char g_mixed_port[32];
+static char g_api_secret[512];
+static char g_current_mode[16];
 static PROCESS_INFORMATION g_proxy;
 static HANDLE g_mutex;
 static BOOL g_mutex_owned;
@@ -58,6 +67,7 @@ static HICON g_icon;
 static BOOL g_custom_icon;
 static NOTIFYICONDATAW g_tray_icon;
 static BOOL g_tray_added;
+static UINT g_taskbar_created_message;
 
 static void ShowSystemError(const WCHAR *operation, DWORD error)
 {
@@ -443,7 +453,8 @@ static void CopyConfigValue(char *destination, size_t capacity, const char *valu
 static BOOL ReadConfig(char *http_port, size_t http_capacity,
                        char *socks_port, size_t socks_capacity,
                        char *mixed_port, size_t mixed_capacity,
-                       char *controller, size_t controller_capacity)
+                       char *controller, size_t controller_capacity,
+                       char *secret, size_t secret_capacity)
 {
     FILE *file;
     char line[8192];
@@ -486,6 +497,8 @@ static BOOL ReadConfig(char *http_port, size_t http_capacity,
             CopyConfigValue(mixed_port, mixed_capacity, value);
         else if (strcmp(line, "external-controller") == 0)
             CopyConfigValue(controller, controller_capacity, value);
+        else if (strcmp(line, "secret") == 0)
+            CopyConfigValue(secret, secret_capacity, value);
     }
 
     if (ferror(file)) {
@@ -497,7 +510,7 @@ static BOOL ReadConfig(char *http_port, size_t http_capacity,
     return TRUE;
 }
 
-static BOOL BuildDashboardUrl(const char *controller)
+static BOOL BuildControllerUrls(const char *controller)
 {
     char endpoint[256];
     WCHAR wide_endpoint[256];
@@ -509,19 +522,19 @@ static BOOL BuildDashboardUrl(const char *controller)
         controller = "127.0.0.1:9090";
     strncpy_s(endpoint, sizeof(endpoint), controller, _TRUNCATE);
 
+    if (strncmp(endpoint, "http://", 7) == 0)
+        memmove(endpoint, endpoint + 7, strlen(endpoint + 7) + 1);
+    else if (strncmp(endpoint, "https://", 8) == 0) {
+        secure = TRUE;
+        memmove(endpoint, endpoint + 8, strlen(endpoint + 8) + 1);
+    }
+
     if (strncmp(endpoint, "0.0.0.0:", 8) == 0) {
         memmove(endpoint + 9, endpoint + 8, strlen(endpoint + 8) + 1);
         memcpy(endpoint, "127.0.0.1", 9);
     } else if (endpoint[0] == ':') {
         memmove(endpoint + 9, endpoint, strlen(endpoint) + 1);
         memcpy(endpoint, "127.0.0.1", 9);
-    }
-
-    if (strncmp(endpoint, "http://", 7) == 0)
-        memmove(endpoint, endpoint + 7, strlen(endpoint + 7) + 1);
-    else if (strncmp(endpoint, "https://", 8) == 0) {
-        secure = TRUE;
-        memmove(endpoint, endpoint + 8, strlen(endpoint + 8) + 1);
     }
 
     length = strlen(endpoint);
@@ -537,18 +550,492 @@ static BOOL BuildDashboardUrl(const char *controller)
     if (converted == 0)
         return FALSE;
 
-    if (secure) {
-        if (swprintf_s(g_dashboard_url,
-                       sizeof(g_dashboard_url) / sizeof(g_dashboard_url[0]),
-                       L"https://%ls/ui", wide_endpoint) < 0)
+    if (swprintf_s(g_controller_url, ARRAYSIZE(g_controller_url),
+                   secure ? L"https://%ls" : L"http://%ls",
+                   wide_endpoint) < 0 ||
+        swprintf_s(g_dashboard_url, ARRAYSIZE(g_dashboard_url),
+                   secure ? L"https://%ls/ui" : L"http://%ls/ui",
+                   wide_endpoint) < 0)
+        return FALSE;
+    return TRUE;
+}
+
+typedef struct JsonParser {
+    const char *text;
+    size_t length;
+    size_t position;
+} JsonParser;
+
+static void JsonSkipWhitespace(JsonParser *parser)
+{
+    while (parser->position < parser->length &&
+           (parser->text[parser->position] == ' ' ||
+            parser->text[parser->position] == '\t' ||
+            parser->text[parser->position] == '\r' ||
+            parser->text[parser->position] == '\n'))
+        ++parser->position;
+}
+
+static BOOL JsonReadString(JsonParser *parser, char *output, size_t capacity)
+{
+    size_t written = 0;
+
+    if (parser->position >= parser->length ||
+        parser->text[parser->position++] != '"')
+        return FALSE;
+    while (parser->position < parser->length) {
+        unsigned char character = (unsigned char)parser->text[parser->position++];
+        if (character == '"') {
+            if (capacity != 0)
+                output[written] = '\0';
+            return TRUE;
+        }
+        if (character < 0x20)
             return FALSE;
+        if (character == '\\') {
+            unsigned int codepoint;
+            unsigned int digit;
+            int i;
+
+            if (parser->position >= parser->length)
+                return FALSE;
+            character = (unsigned char)parser->text[parser->position++];
+            switch (character) {
+            case '"': case '\\': case '/': break;
+            case 'b': character = '\b'; break;
+            case 'f': character = '\f'; break;
+            case 'n': character = '\n'; break;
+            case 'r': character = '\r'; break;
+            case 't': character = '\t'; break;
+            case 'u':
+                codepoint = 0;
+                for (i = 0; i < 4; ++i) {
+                    if (parser->position >= parser->length)
+                        return FALSE;
+                    character = (unsigned char)parser->text[parser->position++];
+                    if (character >= '0' && character <= '9')
+                        digit = character - '0';
+                    else if (character >= 'a' && character <= 'f')
+                        digit = character - 'a' + 10;
+                    else if (character >= 'A' && character <= 'F')
+                        digit = character - 'A' + 10;
+                    else
+                        return FALSE;
+                    codepoint = (codepoint << 4) | digit;
+                }
+                character = codepoint <= 0x7f ? (unsigned char)codepoint : '?';
+                break;
+            default:
+                return FALSE;
+            }
+        }
+        if (capacity != 0) {
+            if (written + 1 >= capacity)
+                return FALSE;
+            output[written++] = (char)character;
+        }
+    }
+    return FALSE;
+}
+
+static BOOL JsonSkipValue(JsonParser *parser, unsigned int depth);
+
+static BOOL JsonSkipNumber(JsonParser *parser)
+{
+    size_t start = parser->position;
+
+    if (parser->position < parser->length &&
+        parser->text[parser->position] == '-')
+        ++parser->position;
+    if (parser->position >= parser->length)
+        return FALSE;
+    if (parser->text[parser->position] == '0') {
+        ++parser->position;
     } else {
-        if (swprintf_s(g_dashboard_url,
-                       sizeof(g_dashboard_url) / sizeof(g_dashboard_url[0]),
-                       L"http://%ls/ui", wide_endpoint) < 0)
+        if (parser->text[parser->position] < '1' ||
+            parser->text[parser->position] > '9')
+            return FALSE;
+        while (parser->position < parser->length &&
+               parser->text[parser->position] >= '0' &&
+               parser->text[parser->position] <= '9')
+            ++parser->position;
+    }
+    if (parser->position < parser->length &&
+        parser->text[parser->position] == '.') {
+        ++parser->position;
+        if (parser->position >= parser->length ||
+            parser->text[parser->position] < '0' ||
+            parser->text[parser->position] > '9')
+            return FALSE;
+        while (parser->position < parser->length &&
+               parser->text[parser->position] >= '0' &&
+               parser->text[parser->position] <= '9')
+            ++parser->position;
+    }
+    if (parser->position < parser->length &&
+        (parser->text[parser->position] == 'e' ||
+         parser->text[parser->position] == 'E')) {
+        ++parser->position;
+        if (parser->position < parser->length &&
+            (parser->text[parser->position] == '+' ||
+             parser->text[parser->position] == '-'))
+            ++parser->position;
+        if (parser->position >= parser->length ||
+            parser->text[parser->position] < '0' ||
+            parser->text[parser->position] > '9')
+            return FALSE;
+        while (parser->position < parser->length &&
+               parser->text[parser->position] >= '0' &&
+               parser->text[parser->position] <= '9')
+            ++parser->position;
+    }
+    return parser->position > start;
+}
+
+static BOOL JsonSkipValue(JsonParser *parser, unsigned int depth)
+{
+    char ignored[1];
+    char character;
+
+    JsonSkipWhitespace(parser);
+    if (parser->position >= parser->length || depth > 32)
+        return FALSE;
+    character = parser->text[parser->position];
+    if (character == '"')
+        return JsonReadString(parser, ignored, 0);
+    if (character == '{' || character == '[') {
+        char closing = character == '{' ? '}' : ']';
+        BOOL is_object = character == '{';
+
+        ++parser->position;
+        JsonSkipWhitespace(parser);
+        if (parser->position < parser->length &&
+            parser->text[parser->position] == closing) {
+            ++parser->position;
+            return TRUE;
+        }
+        for (;;) {
+            if (is_object) {
+                if (!JsonReadString(parser, ignored, 0))
+                    return FALSE;
+                JsonSkipWhitespace(parser);
+                if (parser->position >= parser->length ||
+                    parser->text[parser->position++] != ':')
+                    return FALSE;
+            }
+            if (!JsonSkipValue(parser, depth + 1))
+                return FALSE;
+            JsonSkipWhitespace(parser);
+            if (parser->position >= parser->length)
+                return FALSE;
+            character = parser->text[parser->position++];
+            if (character == closing)
+                return TRUE;
+            if (character != ',')
+                return FALSE;
+            JsonSkipWhitespace(parser);
+        }
+    }
+    if (character == '-' || (character >= '0' && character <= '9'))
+        return JsonSkipNumber(parser);
+    if (parser->length - parser->position >= 4 &&
+        memcmp(parser->text + parser->position, "true", 4) == 0) {
+        parser->position += 4;
+        return TRUE;
+    }
+    if (parser->length - parser->position >= 5 &&
+        memcmp(parser->text + parser->position, "false", 5) == 0) {
+        parser->position += 5;
+        return TRUE;
+    }
+    if (parser->length - parser->position >= 4 &&
+        memcmp(parser->text + parser->position, "null", 4) == 0) {
+        parser->position += 4;
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static BOOL ParseConfigMode(const char *json, size_t length,
+                            char *mode, size_t mode_capacity)
+{
+    JsonParser parser;
+    BOOL found_mode = FALSE;
+
+    parser.text = json;
+    parser.length = length;
+    parser.position = 0;
+    JsonSkipWhitespace(&parser);
+    if (parser.position >= parser.length ||
+        parser.text[parser.position++] != '{')
+        return FALSE;
+    JsonSkipWhitespace(&parser);
+    while (parser.position < parser.length &&
+           parser.text[parser.position] != '}') {
+        char key[64];
+
+        if (!JsonReadString(&parser, key, sizeof(key)))
+            return FALSE;
+        JsonSkipWhitespace(&parser);
+        if (parser.position >= parser.length ||
+            parser.text[parser.position++] != ':')
+            return FALSE;
+        JsonSkipWhitespace(&parser);
+        if (strcmp(key, "mode") == 0) {
+            if (found_mode || !JsonReadString(&parser, mode, mode_capacity))
+                return FALSE;
+            found_mode = TRUE;
+        } else if (!JsonSkipValue(&parser, 0)) {
+            return FALSE;
+        }
+        JsonSkipWhitespace(&parser);
+        if (parser.position >= parser.length)
+            return FALSE;
+        if (parser.text[parser.position] == '}')
+            break;
+        if (parser.text[parser.position++] != ',')
+            return FALSE;
+        JsonSkipWhitespace(&parser);
+        if (parser.position < parser.length &&
+            parser.text[parser.position] == '}')
             return FALSE;
     }
+    if (parser.position >= parser.length ||
+        parser.text[parser.position++] != '}')
+        return FALSE;
+    JsonSkipWhitespace(&parser);
+    if (parser.position != parser.length || !found_mode)
+        return FALSE;
+    return strcmp(mode, "direct") == 0 ||
+           strcmp(mode, "global") == 0 ||
+           strcmp(mode, "rule") == 0;
+}
+
+static BOOL IsControllerUnavailableError(DWORD error)
+{
+    return error == ERROR_WINHTTP_TIMEOUT ||
+           error == ERROR_WINHTTP_NAME_NOT_RESOLVED ||
+           error == ERROR_WINHTTP_CANNOT_CONNECT ||
+           error == ERROR_WINHTTP_CONNECTION_ERROR;
+}
+
+static BOOL ClashHttpRequest(const WCHAR *method, const WCHAR *path,
+                            char *body, char *response,
+                            size_t response_capacity, DWORD *status_code,
+                            BOOL quiet_unavailable)
+{
+    URL_COMPONENTSW components;
+    WCHAR host[256];
+    WCHAR wide_secret[512];
+    WCHAR authorization[600];
+    HINTERNET session = NULL;
+    HINTERNET connection = NULL;
+    HINTERNET request = NULL;
+    DWORD error = ERROR_SUCCESS;
+    DWORD status_size = sizeof(*status_code);
+    DWORD bytes_read;
+    DWORD available;
+    size_t response_length = 0;
+    BOOL success = FALSE;
+    int converted;
+    char discarded_response[256];
+
+    if (response_capacity == 0) {
+        response = discarded_response;
+        response_capacity = sizeof(discarded_response);
+    }
+
+    ZeroMemory(&components, sizeof(components));
+    components.dwStructSize = sizeof(components);
+    components.lpszHostName = host;
+    components.dwHostNameLength = ARRAYSIZE(host);
+    if (!WinHttpCrackUrl(g_controller_url, 0, 0, &components)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    session = WinHttpOpen(L"SlimClash", WINHTTP_ACCESS_TYPE_NO_PROXY,
+                          WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+    if (session == NULL) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (!WinHttpSetTimeouts(session, 2000, 2000, 2000, 2000)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    connection = WinHttpConnect(session, host, components.nPort, 0);
+    if (connection == NULL) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    request = WinHttpOpenRequest(connection, method, path, NULL,
+                                 WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES,
+                                 components.nScheme == INTERNET_SCHEME_HTTPS ?
+                                 WINHTTP_FLAG_SECURE : 0);
+    if (request == NULL) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (g_api_secret[0] != '\0') {
+        converted = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                        g_api_secret, -1,
+                                        wide_secret, ARRAYSIZE(wide_secret));
+        if (converted == 0) {
+            error = GetLastError();
+            goto cleanup;
+        }
+        if (swprintf_s(authorization, ARRAYSIZE(authorization),
+                       L"Authorization: Bearer %ls\r\n", wide_secret) < 0) {
+            error = ERROR_INSUFFICIENT_BUFFER;
+            goto cleanup;
+        }
+        if (!WinHttpAddRequestHeaders(request, authorization, (DWORD)-1L,
+                                      WINHTTP_ADDREQ_FLAG_ADD)) {
+            error = GetLastError();
+            goto cleanup;
+        }
+    }
+    if (body != NULL &&
+        !WinHttpAddRequestHeaders(request, L"Content-Type: application/json\r\n",
+                                  (DWORD)-1L, WINHTTP_ADDREQ_FLAG_ADD)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (!WinHttpSendRequest(request, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+                            body, body == NULL ? 0 : (DWORD)strlen(body),
+                            body == NULL ? 0 : (DWORD)strlen(body), 0)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (!WinHttpReceiveResponse(request, NULL)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (!WinHttpQueryHeaders(request, WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+                             WINHTTP_HEADER_NAME_BY_INDEX, status_code,
+                             &status_size, WINHTTP_NO_HEADER_INDEX)) {
+        error = GetLastError();
+        goto cleanup;
+    }
+    if (response_capacity != 0)
+        response[0] = '\0';
+    for (;;) {
+        if (!WinHttpQueryDataAvailable(request, &available)) {
+            error = GetLastError();
+            goto cleanup;
+        }
+        if (available == 0)
+            break;
+        if (available > response_capacity - response_length - 1) {
+            error = ERROR_INSUFFICIENT_BUFFER;
+            goto cleanup;
+        }
+        if (!WinHttpReadData(request, response + response_length, available,
+                             &bytes_read)) {
+            error = GetLastError();
+            goto cleanup;
+        }
+        if (memchr(response + response_length, '\0', bytes_read) != NULL) {
+            error = ERROR_INVALID_DATA;
+            goto cleanup;
+        }
+        response_length += bytes_read;
+    }
+    if (response_capacity != 0)
+        response[response_length] = '\0';
+    success = TRUE;
+
+cleanup:
+    if (request != NULL)
+        WinHttpCloseHandle(request);
+    if (connection != NULL)
+        WinHttpCloseHandle(connection);
+    if (session != NULL)
+        WinHttpCloseHandle(session);
+    if (!success &&
+        !(quiet_unavailable && IsControllerUnavailableError(error)))
+        ShowSystemError(L"Could not communicate with the Clash controller.", error);
+    return success;
+}
+
+static BOOL ReadProxyMode(char *mode, size_t capacity)
+{
+    char response[8192];
+    DWORD status_code = 0;
+
+    if (!ClashHttpRequest(L"GET", L"/configs", NULL, response,
+                          sizeof(response), &status_code, TRUE))
+        return FALSE;
+    if (status_code >= 500)
+        return FALSE;
+    if (status_code != HTTP_STATUS_OK) {
+        WCHAR message[128];
+        swprintf_s(message, ARRAYSIZE(message),
+                   L"Clash returned HTTP status %lu while reading the proxy mode.",
+                   status_code);
+        MessageBoxW(NULL, message, APP_NAME, MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    if (!ParseConfigMode(response, strlen(response), mode, capacity)) {
+        MessageBoxW(NULL, L"Could not read a valid proxy mode from the Clash response.",
+                    APP_NAME, MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
     return TRUE;
+}
+
+static BOOL SetProxyMode(const char *mode)
+{
+    char body[64];
+    DWORD status_code = 0;
+
+    if (sprintf_s(body, sizeof(body), "{\"mode\":\"%s\"}", mode) < 0) {
+        MessageBoxW(NULL, L"Could not create the proxy mode request.",
+                    APP_NAME, MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    if (!ClashHttpRequest(L"PATCH", L"/configs", body, NULL, 0,
+                          &status_code, FALSE))
+        return FALSE;
+    if (status_code < 200 || status_code >= 300) {
+        WCHAR message[128];
+        swprintf_s(message, ARRAYSIZE(message),
+                   L"Clash returned HTTP status %lu while changing the proxy mode.",
+                   status_code);
+        MessageBoxW(NULL, message, APP_NAME, MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    strcpy_s(g_current_mode, sizeof(g_current_mode), mode);
+    return TRUE;
+}
+
+static void ReloadProxyConfig(void)
+{
+    char body[] = "{\"path\":\"\",\"payload\":\"\"}";
+    DWORD status_code = 0;
+
+    if (!ClashHttpRequest(L"PUT", L"/configs?reload=true", body,
+                          NULL, 0, &status_code, FALSE))
+        return;
+    if (status_code != HTTP_STATUS_NO_CONTENT) {
+        WCHAR message[128];
+        swprintf_s(message, ARRAYSIZE(message),
+                   L"Clash returned HTTP status %lu while reloading the configuration.",
+                   status_code);
+        MessageBoxW(NULL, message, APP_NAME, MB_OK | MB_ICONERROR);
+        return;
+    }
+    g_tray_icon.cbSize = sizeof(g_tray_icon);
+    g_tray_icon.uFlags = NIF_INFO;
+    wcscpy_s(g_tray_icon.szInfoTitle, ARRAYSIZE(g_tray_icon.szInfoTitle),
+             APP_NAME);
+    wcscpy_s(g_tray_icon.szInfo, ARRAYSIZE(g_tray_icon.szInfo),
+             L"Configuration reloaded successfully.");
+    g_tray_icon.dwInfoFlags = NIIF_INFO;
+    g_tray_icon.hBalloonIcon = NULL;
+    if (!Shell_NotifyIconW(NIM_MODIFY, &g_tray_icon))
+        ShowSystemError(L"Could not notify that the configuration was reloaded.",
+                        GetLastError());
 }
 
 static BOOL SetRegistryString(HKEY key, const WCHAR *name, const WCHAR *value,
@@ -937,7 +1424,9 @@ static BOOL SetProxyConsoleVisible(BOOL visible)
 static void ShowTrayMenu(HWND window)
 {
     HMENU menu = CreatePopupMenu();
+    HMENU mode_menu;
     BOOL autostart = FALSE;
+    char mode[16] = "";
     UINT flags;
     POINT cursor;
 
@@ -950,8 +1439,32 @@ static void ShowTrayMenu(HWND window)
         return;
     }
 
+    mode_menu = CreatePopupMenu();
+    if (mode_menu == NULL) {
+        ShowSystemError(L"Could not create the proxy mode menu.", GetLastError());
+        DestroyMenu(menu);
+        return;
+    }
+    if (ReadProxyMode(mode, sizeof(mode))) {
+        strcpy_s(g_current_mode, sizeof(g_current_mode), mode);
+    } else {
+        g_current_mode[0] = '\0';
+    }
+    AppendMenuW(mode_menu, MF_STRING |
+                (strcmp(g_current_mode, "direct") == 0 ? MF_CHECKED : MF_UNCHECKED),
+                MENU_MODE_DIRECT, L"Direct");
+    AppendMenuW(mode_menu, MF_STRING |
+                (strcmp(g_current_mode, "global") == 0 ? MF_CHECKED : MF_UNCHECKED),
+                MENU_MODE_GLOBAL, L"Global");
+    AppendMenuW(mode_menu, MF_STRING |
+                (strcmp(g_current_mode, "rule") == 0 ? MF_CHECKED : MF_UNCHECKED),
+                MENU_MODE_RULE, L"Rule");
+
     AppendMenuW(menu, MF_STRING, MENU_DASHBOARD, L"Open Dashboard");
     AppendMenuW(menu, MF_STRING, MENU_CONFIG, L"Open Config Folder");
+    AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+    AppendMenuW(menu, MF_POPUP, (UINT_PTR)mode_menu, L"Proxy Mode");
+    AppendMenuW(menu, MF_STRING, MENU_RELOAD_CONFIG, L"Reload Config");
     AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
     flags = MF_STRING | (autostart ? MF_CHECKED : MF_UNCHECKED);
     AppendMenuW(menu, flags, MENU_AUTOSTART, L"Start with Windows");
@@ -960,6 +1473,7 @@ static void ShowTrayMenu(HWND window)
     flags = MF_STRING | (g_hide_tray_marker ? MF_CHECKED : MF_UNCHECKED);
     AppendMenuW(menu, flags, MENU_HIDE_TRAY, L"Hide Tray Icon");
     AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+    AppendMenuW(menu, MF_STRING, MENU_GITHUB, L"GitHub");
     AppendMenuW(menu, MF_STRING, MENU_EXIT, L"Quit");
 
     GetCursorPos(&cursor);
@@ -1019,6 +1533,17 @@ static void StopProxy(void)
 static LRESULT CALLBACK WindowProc(HWND window, UINT message,
                                    WPARAM wparam, LPARAM lparam)
 {
+    if (message == g_taskbar_created_message && g_tray_added) {
+        g_tray_added = FALSE;
+        if (g_icon != NULL && g_custom_icon)
+            DestroyIcon(g_icon);
+        g_icon = NULL;
+        g_custom_icon = FALSE;
+        if (!g_tray_hidden || g_temporary_tray_icon)
+            AddTrayIcon(window, FALSE);
+        return 0;
+    }
+
     switch (message) {
     case TRAY_MESSAGE: {
         UINT event = (UINT)lparam;
@@ -1063,6 +1588,22 @@ static LRESULT CALLBACK WindowProc(HWND window, UINT message,
             return 0;
         case MENU_CONFIG:
             OpenPath(g_config_dir, L"open the configuration folder");
+            return 0;
+        case MENU_MODE_DIRECT:
+            SetProxyMode("direct");
+            return 0;
+        case MENU_MODE_GLOBAL:
+            SetProxyMode("global");
+            return 0;
+        case MENU_MODE_RULE:
+            SetProxyMode("rule");
+            return 0;
+        case MENU_RELOAD_CONFIG:
+            ReloadProxyConfig();
+            return 0;
+        case MENU_GITHUB:
+            OpenPath(L"https://github.com/coo11/SlimClash",
+                     L"open the GitHub repository");
             return 0;
         case MENU_AUTOSTART: {
             BOOL enabled = FALSE;
@@ -1274,9 +1815,10 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous_instance,
     if (!ReadConfig(g_http_port, sizeof(g_http_port),
                     g_socks_port, sizeof(g_socks_port),
                     g_mixed_port, sizeof(g_mixed_port),
-                    controller, sizeof(controller)))
+                    controller, sizeof(controller),
+                    g_api_secret, sizeof(g_api_secret)))
         goto cleanup;
-    if (!BuildDashboardUrl(controller)) {
+    if (!BuildControllerUrls(controller)) {
         MessageBoxW(NULL, L"Could not parse the Dashboard controller address in the configuration.",
                     APP_NAME, MB_OK | MB_ICONERROR);
         goto cleanup;
@@ -1285,6 +1827,13 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous_instance,
     g_proxy_settings_active = TRUE;
     if (!SetProxySettings(TRUE, proxy_port))
         goto cleanup;
+
+    g_taskbar_created_message = RegisterWindowMessageW(L"TaskbarCreated");
+    if (g_taskbar_created_message == 0) {
+        ShowSystemError(L"Could not register the taskbar restart message.",
+                        GetLastError());
+        goto cleanup;
+    }
 
     ZeroMemory(&window_class, sizeof(window_class));
     window_class.cbSize = sizeof(window_class);

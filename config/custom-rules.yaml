@@ -12,6 +12,7 @@ rules:
 
   # PROCESS
   - PROCESS-NAME,com.miui.weather2,DIRECT
+  - PROCESS-NAME,Antigravity.exe,AI
 
   # ACG
   - DOMAIN,mangadex.org,PROXY
