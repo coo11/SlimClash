@@ -90,13 +90,13 @@ jobs:
         with:
           tag_name: weeklybuild
           prerelease: false
-          name: SlimClash ${{ steps.version.outputs.value }} (Mihomo ${{ steps.mihomo.outputs.tag }})
+          name: SlimClash ${{ steps.version.outputs.value }}
           body: |
             > SlimClash version ${{ steps.version.outputs.value }} with Mihomo ${{ steps.mihomo.outputs.tag }}.
             ## Related Links
-              - [Original Release](https://github.com/MetaCubeX/mihomo/releases/latest)
+              - [Mihomo Release](https://github.com/MetaCubeX/mihomo/releases/latest)
               - Dashboard - [Zashboard](https://github.com/Zephyruso/zashboard)
-              - Dashboard - [Official](https://github.com/MetaCubeX/metacubexd)
+              - Dashboard - [MetaCubeX](https://github.com/MetaCubeX/metacubexd)
           files: |
             dist/SlimClash-${{ steps.version.outputs.value }}.zip
             dist/config-${{ steps.version.outputs.value }}.yaml

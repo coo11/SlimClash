@@ -1,1 +1,1 @@
-magick -background none clash.svg -define icon:auto-resize=16,32,48 icon.ico
+magick -background none clash.svg -trim +repage -define icon:auto-resize=16,32,48 icon.ico
