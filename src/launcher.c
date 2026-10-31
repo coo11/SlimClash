@@ -1379,15 +1379,23 @@ static void ShowTrayMenu(HWND window)
     } else {
         g_current_mode[0] = '\0';
     }
-    AppendMenuW(mode_menu, MF_STRING |
-                (strcmp(g_current_mode, "direct") == 0 ? MF_CHECKED : MF_UNCHECKED),
-                MENU_MODE_DIRECT, L"Direct");
-    AppendMenuW(mode_menu, MF_STRING |
-                (strcmp(g_current_mode, "global") == 0 ? MF_CHECKED : MF_UNCHECKED),
-                MENU_MODE_GLOBAL, L"Global");
-    AppendMenuW(mode_menu, MF_STRING |
-                (strcmp(g_current_mode, "rule") == 0 ? MF_CHECKED : MF_UNCHECKED),
-                MENU_MODE_RULE, L"Rule");
+    AppendMenuW(mode_menu, MF_STRING, MENU_MODE_DIRECT, L"Direct");
+    AppendMenuW(mode_menu, MF_STRING, MENU_MODE_GLOBAL, L"Global");
+    AppendMenuW(mode_menu, MF_STRING, MENU_MODE_RULE, L"Rule");
+    if (g_current_mode[0] != '\0') {
+        UINT selected_mode = strcmp(g_current_mode, "direct") == 0 ?
+                             MENU_MODE_DIRECT :
+                             strcmp(g_current_mode, "global") == 0 ?
+                             MENU_MODE_GLOBAL : MENU_MODE_RULE;
+        if (!CheckMenuRadioItem(mode_menu, MENU_MODE_DIRECT, MENU_MODE_RULE,
+                                selected_mode, MF_BYCOMMAND)) {
+            ShowSystemError(L"Could not select the current proxy mode.",
+                            GetLastError());
+            DestroyMenu(mode_menu);
+            DestroyMenu(menu);
+            return;
+        }
+    }
 
     AppendMenuW(menu, MF_STRING, MENU_DASHBOARD, L"Open Dashboard");
     AppendMenuW(menu, MF_STRING, MENU_CONFIG, L"Open Config Folder");
