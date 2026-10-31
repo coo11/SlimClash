@@ -1165,77 +1165,6 @@ static BOOL SetProxySettings(BOOL enable, const char *proxy_port)
     return success;
 }
 
-static BOOL FlushDnsCache(void)
-{
-    WCHAR system_directory[MAX_PATH];
-    WCHAR ipconfig_path[MAX_PATH];
-    WCHAR command_line[MAX_PATH + 32];
-    STARTUPINFOW startup;
-    PROCESS_INFORMATION process;
-    DWORD length;
-    DWORD wait_result;
-    DWORD exit_code;
-
-    length = GetSystemDirectoryW(system_directory, ARRAYSIZE(system_directory));
-    if (length == 0 || length >= ARRAYSIZE(system_directory)) {
-        ShowSystemError(L"Could not locate ipconfig.exe to flush the DNS cache.",
-                        GetLastError());
-        return FALSE;
-    }
-    if (wcscpy_s(ipconfig_path, ARRAYSIZE(ipconfig_path), system_directory) != 0 ||
-        !AppendPath(ipconfig_path, ARRAYSIZE(ipconfig_path), L"\\ipconfig.exe") ||
-        swprintf_s(command_line, ARRAYSIZE(command_line),
-                   L"\"%ls\" /flushdns", ipconfig_path) < 0) {
-        MessageBoxW(NULL, L"The ipconfig.exe path is too long.",
-                    APP_NAME, MB_OK | MB_ICONERROR);
-        return FALSE;
-    }
-
-    ZeroMemory(&startup, sizeof(startup));
-    startup.cb = sizeof(startup);
-    startup.dwFlags = STARTF_USESHOWWINDOW;
-    startup.wShowWindow = SW_HIDE;
-    ZeroMemory(&process, sizeof(process));
-    if (!CreateProcessW(ipconfig_path, command_line, NULL, NULL, FALSE,
-                        CREATE_NO_WINDOW, NULL, NULL, &startup, &process)) {
-        ShowSystemError(L"Could not start ipconfig.exe to flush the DNS cache.",
-                        GetLastError());
-        return FALSE;
-    }
-    CloseHandle(process.hThread);
-    wait_result = WaitForSingleObject(process.hProcess, 15000);
-    if (wait_result == WAIT_TIMEOUT) {
-        TerminateProcess(process.hProcess, ERROR_TIMEOUT);
-        WaitForSingleObject(process.hProcess, 5000);
-        CloseHandle(process.hProcess);
-        MessageBoxW(NULL, L"Timed out while flushing the DNS cache.",
-                    APP_NAME, MB_OK | MB_ICONERROR);
-        return FALSE;
-    }
-    if (wait_result == WAIT_FAILED) {
-        DWORD error = GetLastError();
-        CloseHandle(process.hProcess);
-        ShowSystemError(L"Could not wait for the DNS cache flush to finish.", error);
-        return FALSE;
-    }
-    if (!GetExitCodeProcess(process.hProcess, &exit_code)) {
-        DWORD error = GetLastError();
-        CloseHandle(process.hProcess);
-        ShowSystemError(L"Could not check the DNS cache flush result.", error);
-        return FALSE;
-    }
-    CloseHandle(process.hProcess);
-    if (exit_code != 0) {
-        WCHAR message[256];
-        swprintf_s(message, ARRAYSIZE(message),
-                   L"ipconfig.exe could not flush the DNS cache (exit code %lu).",
-                   exit_code);
-        MessageBoxW(NULL, message, APP_NAME, MB_OK | MB_ICONERROR);
-        return FALSE;
-    }
-    return TRUE;
-}
-
 static BOOL IsAutostartEnabled(BOOL *enabled)
 {
     HKEY key;
@@ -1900,7 +1829,6 @@ message_loop_done:
 cleanup:
     if (g_proxy_settings_active) {
         SetProxySettings(FALSE, NULL);
-        FlushDnsCache();
         g_proxy_settings_active = FALSE;
     }
     if (g_mutex != NULL && g_mutex_owned)

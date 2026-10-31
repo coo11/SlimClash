@@ -58,7 +58,7 @@
   <text x="580" y="699" text-anchor="middle" class="heading">4. 设置 Windows 用户代理</text>
   <text x="580" y="727" text-anchor="middle" class="body">启用 HKCU Internet 代理，设置本地地址绕过列表</text>
   <text x="580" y="752" text-anchor="middle" class="body">写入 http_proxy / https_proxy 环境变量并广播变更</text>
-  <text x="580" y="777" text-anchor="middle" class="small">设置失败也会进入清理流程，尝试关闭代理、清空变量并刷新 DNS</text>
+  <text x="580" y="777" text-anchor="middle" class="small">设置失败也会进入清理流程，尝试关闭代理、清空变量</text>
 
   <rect x="300" y="843" width="560" height="100" rx="14" class="step"/>
   <text x="580" y="877" text-anchor="middle" class="heading">5. 创建托盘消息窗口</text>
@@ -85,7 +85,7 @@
   <rect x="300" y="1473" width="560" height="130" rx="14" class="cleanup"/>
   <text x="580" y="1507" text-anchor="middle" class="heading">9. 清理并退出</text>
   <text x="580" y="1535" text-anchor="middle" class="body">移除托盘图标；若 Mihomo 仍在运行则终止它</text>
-  <text x="580" y="1560" text-anchor="middle" class="body">若代理设置流程已开始：关闭系统代理、清空变量、刷新 DNS</text>
+  <text x="580" y="1560" text-anchor="middle" class="body">若代理设置流程已开始：关闭系统代理、清空变量</text>
   <text x="580" y="1585" text-anchor="middle" class="small">释放互斥锁并退出</text>
 
   <rect x="430" y="1660" width="300" height="58" rx="29" class="terminal"/>
@@ -113,7 +113,7 @@
   <rect x="900" y="1000" width="235" height="94" rx="12" class="error"/>
   <text x="1017" y="1032" text-anchor="middle" class="heading">启动 Mihomo 失败</text>
   <text x="1017" y="1060" text-anchor="middle" class="small">移除托盘图标并执行清理</text>
-  <text x="1017" y="1081" text-anchor="middle" class="small">关闭代理、清变量、刷新 DNS</text>
+  <text x="1017" y="1081" text-anchor="middle" class="small">关闭代理、清变量</text>
   <path d="M860 1038 H900" class="error-arrow"/>
   <path d="M1135 1047 H1145 V1538 H860" class="error-arrow"/>
 
@@ -134,5 +134,5 @@
   <path d="M1017 1440 V1460 H860" class="error-arrow"/>
 
   <text x="580" y="1760" text-anchor="middle" class="small">如果 Mihomo 在启动器显示通知前就已退出，通知仍可能短暂出现；其退出码不会被启动器报告。</text>
-  <text x="580" y="1784" text-anchor="middle" class="small">早期失败发生在代理设置之前时，只释放已取得的互斥锁，不执行代理回滚或 DNS 刷新。</text>
+  <text x="580" y="1784" text-anchor="middle" class="small">早期失败发生在代理设置之前时，只释放已取得的互斥锁，不执行代理回滚。</text>
 </svg>
