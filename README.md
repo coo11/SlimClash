@@ -13,6 +13,8 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="./asset/startup-flow.svg">
-</p>
+## Screenshot
+![](./asset/screenshot.png)
+
+## Startup Flow
+ <img src="./asset/startup-flow.svg" width="800">

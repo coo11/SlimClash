@@ -1,138 +1,73 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1880" viewBox="0 0 1160 1880" role="img" aria-labelledby="title description">
-  <title id="title">SlimClash 启动流程</title>
-  <desc id="description">展示 SlimClash 如何初始化路径、替换旧实例、读取配置、设置系统代理、启动并监控 Mihomo，以及发生错误或退出时的清理流程。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title description">
+  <title id="title">SlimClash Startup Flow</title>
+  <desc id="description">Startup, runtime, failure handling, and cleanup flow for the SlimClash launcher.</desc>
   <defs>
-    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
-    </marker>
-    <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#64748b"></path>
     </marker>
     <style>
-      text { font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif; fill: #172033; }
-      .title { font-size: 30px; font-weight: 700; }
-      .subtitle { font-size: 15px; fill: #526179; }
-      .node { fill: #ffffff; stroke: #8da1bd; stroke-width: 2; }
-      .step { fill: #eff6ff; stroke: #3b82f6; stroke-width: 2; }
-      .proxy { fill: #ecfdf5; stroke: #10b981; stroke-width: 2; }
-      .process { fill: #f5f3ff; stroke: #8b5cf6; stroke-width: 2; }
-      .cleanup { fill: #fff7ed; stroke: #f97316; stroke-width: 2; }
-      .error { fill: #fef2f2; stroke: #ef4444; stroke-width: 2; }
-      .terminal { fill: #172033; stroke: #172033; stroke-width: 2; }
-      .terminal-text { fill: #ffffff; font-size: 17px; font-weight: 700; }
-      .heading { font-size: 18px; font-weight: 700; }
-      .body { font-size: 15px; }
-      .small { font-size: 13px; fill: #526179; }
-      .arrow { fill: none; stroke: #64748b; stroke-width: 2.5; marker-end: url(#arrow); }
-      .error-arrow { fill: none; stroke: #dc2626; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow-red); }
-      .label { font-size: 13px; font-weight: 600; fill: #526179; }
-      .error-label { font-size: 13px; font-weight: 600; fill: #dc2626; }
+      text { font-family: "Segoe UI", Arial, sans-serif; fill: #172033; }
+      .title { font-size: 25px; font-weight: 700; }
+      .node { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1.5; }
+      .setup { fill: #eff6ff; stroke: #3b82f6; }
+      .proxy { fill: #ecfdf5; stroke: #10b981; }
+      .run { fill: #f5f3ff; stroke: #8b5cf6; }
+      .cleanup { fill: #fff7ed; stroke: #f97316; }
+      .error { fill: #fef2f2; stroke: #ef4444; }
+      .terminal { fill: #172033; stroke: #172033; }
+      .terminal-text { fill: #fff; font-size: 15px; font-weight: 700; }
+      .heading { font-size: 16px; font-weight: 700; }
+      .body { font-size: 13px; }
+      .small { font-size: 12px; fill: #526179; }
+      .arrow { fill: none; stroke: #64748b; stroke-width: 2; marker-end: url(#arrow); }
+      .error-arrow { fill: none; stroke: #dc2626; stroke-width: 1.8; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+      .error-text { font-size: 12px; fill: #b91c1c; font-weight: 600; }
     </style>
   </defs>
-
-  <rect width="1160" height="1880" fill="#f8fafc"/>
-  <text x="580" y="52" text-anchor="middle" class="title">SlimClash 启动流程</text>
-  <text x="580" y="80" text-anchor="middle" class="subtitle">依据 launcher.c 当前实现；实线为正常流程，红色虚线为错误退出路径</text>
-
-  <rect x="430" y="108" width="300" height="58" rx="29" class="terminal"/>
-  <text x="580" y="144" text-anchor="middle" class="terminal-text">运行 SlimClash.exe</text>
-
-  <rect x="300" y="205" width="560" height="100" rx="14" class="step"/>
-  <text x="580" y="238" text-anchor="middle" class="heading">1. 解析启动器路径和运行偏好</text>
-  <text x="580" y="265" text-anchor="middle" class="body">读取同目录的 clash.exe、.clash\config.yaml</text>
-  <text x="580" y="288" text-anchor="middle" class="body">读取同目录 hide_tray_icon 标记</text>
-
-  <rect x="300" y="345" width="560" height="120" rx="14" class="step"/>
-  <text x="580" y="378" text-anchor="middle" class="heading">2. 获取按启动器路径区分的互斥锁</text>
-  <text x="580" y="405" text-anchor="middle" class="body">已有实例隐藏且标记存在：通知旧实例恢复图标，新进程退出</text>
-  <text x="580" y="430" text-anchor="middle" class="body">否则按完整映像路径替换同目录的旧 SlimClash / clash</text>
-  <text x="580" y="452" text-anchor="middle" class="small">恢复图标不会删除标记；再次启动可按标记重新隐藏并替换实例</text>
-
-  <rect x="300" y="505" width="560" height="120" rx="14" class="step"/>
-  <text x="580" y="538" text-anchor="middle" class="heading">3. 读取 .clash\config.yaml</text>
-  <text x="580" y="565" text-anchor="middle" class="body">提取 HTTP、SOCKS、Mixed 端口和 external-controller</text>
-  <text x="580" y="590" text-anchor="middle" class="body">生成 Dashboard 地址（默认控制器为 127.0.0.1:9090）</text>
-  <text x="580" y="612" text-anchor="middle" class="small">mixed-port 优先作为系统代理端口；缺少时使用 port</text>
-
-  <rect x="300" y="665" width="560" height="138" rx="14" class="proxy"/>
-  <text x="580" y="699" text-anchor="middle" class="heading">4. 设置 Windows 用户代理</text>
-  <text x="580" y="727" text-anchor="middle" class="body">启用 HKCU Internet 代理，设置本地地址绕过列表</text>
-  <text x="580" y="752" text-anchor="middle" class="body">写入 http_proxy / https_proxy 环境变量并广播变更</text>
-  <text x="580" y="777" text-anchor="middle" class="small">设置失败也会进入清理流程，尝试关闭代理、清空变量</text>
-
-  <rect x="300" y="843" width="560" height="100" rx="14" class="step"/>
-  <text x="580" y="877" text-anchor="middle" class="heading">5. 创建托盘消息窗口</text>
-  <text x="580" y="905" text-anchor="middle" class="body">注册隐藏窗口，接收托盘事件、菜单命令和 Windows 消息</text>
-  <text x="580" y="929" text-anchor="middle" class="small">此时尚无主窗口</text>
-
-  <rect x="300" y="983" width="560" height="110" rx="14" class="process"/>
-  <text x="580" y="1017" text-anchor="middle" class="heading">6. 启动 Mihomo</text>
-  <text x="580" y="1045" text-anchor="middle" class="body">运行同目录 clash.exe -d ".clash"</text>
-  <text x="580" y="1070" text-anchor="middle" class="body">创建隐藏的新控制台，并保存子进程句柄</text>
-
-  <rect x="300" y="1133" width="560" height="120" rx="14" class="step"/>
-  <text x="580" y="1167" text-anchor="middle" class="heading">7. 显示启动通知并设置托盘状态</text>
-  <text x="580" y="1195" text-anchor="middle" class="body">通知文本列出 HTTP、SOCKS、Mixed 端口</text>
-  <text x="580" y="1220" text-anchor="middle" class="body">正常模式保留图标；隐藏模式仅为通知临时显示图标</text>
-  <text x="580" y="1242" text-anchor="middle" class="small">隐藏模式在通知关闭、超时或 15 秒兜底后移除图标</text>
-
-  <rect x="300" y="1293" width="560" height="130" rx="14" class="process"/>
-  <text x="580" y="1327" text-anchor="middle" class="heading">8. 同时等待 Mihomo 进程和托盘消息</text>
-  <text x="580" y="1355" text-anchor="middle" class="body">处理 Dashboard、配置目录、开机启动、控制台及隐藏图标菜单</text>
-  <text x="580" y="1380" text-anchor="middle" class="body">用户选择退出时终止 Mihomo；Mihomo 自行退出时启动器也退出</text>
-  <text x="580" y="1405" text-anchor="middle" class="small">包括 Mihomo 因读取配置失败而退出的情况</text>
-
-  <rect x="300" y="1473" width="560" height="130" rx="14" class="cleanup"/>
-  <text x="580" y="1507" text-anchor="middle" class="heading">9. 清理并退出</text>
-  <text x="580" y="1535" text-anchor="middle" class="body">移除托盘图标；若 Mihomo 仍在运行则终止它</text>
-  <text x="580" y="1560" text-anchor="middle" class="body">若代理设置流程已开始：关闭系统代理、清空变量</text>
-  <text x="580" y="1585" text-anchor="middle" class="small">释放互斥锁并退出</text>
-
-  <rect x="430" y="1660" width="300" height="58" rx="29" class="terminal"/>
-  <text x="580" y="1696" text-anchor="middle" class="terminal-text">SlimClash 退出</text>
-
-  <path d="M580 166 V205" class="arrow"/>
-  <path d="M580 305 V345" class="arrow"/>
-  <path d="M580 465 V505" class="arrow"/>
-  <path d="M580 625 V665" class="arrow"/>
-  <path d="M580 803 V843" class="arrow"/>
-  <path d="M580 943 V983" class="arrow"/>
-  <path d="M580 1093 V1133" class="arrow"/>
-  <path d="M580 1253 V1293" class="arrow"/>
-  <path d="M580 1423 V1473" class="arrow"/>
-  <text x="596" y="1455" class="label">Mihomo 进程退出或用户选择退出</text>
-  <path d="M580 1603 V1660" class="arrow"/>
-
-  <rect x="25" y="515" width="235" height="105" rx="12" class="error"/>
-  <text x="142" y="547" text-anchor="middle" class="heading">启动器配置读取失败</text>
-  <text x="142" y="575" text-anchor="middle" class="small">提示错误；不启动 Mihomo</text>
-  <text x="142" y="598" text-anchor="middle" class="small">释放互斥锁后退出</text>
-  <path d="M300 565 H260" class="error-arrow"/>
-  <path d="M142 620 V1688 H430" class="error-arrow"/>
-
-  <rect x="900" y="1000" width="235" height="94" rx="12" class="error"/>
-  <text x="1017" y="1032" text-anchor="middle" class="heading">启动 Mihomo 失败</text>
-  <text x="1017" y="1060" text-anchor="middle" class="small">移除托盘图标并执行清理</text>
-  <text x="1017" y="1081" text-anchor="middle" class="small">关闭代理、清变量</text>
-  <path d="M860 1038 H900" class="error-arrow"/>
-  <path d="M1135 1047 H1145 V1538 H860" class="error-arrow"/>
-
-  <rect x="20" y="1300" width="250" height="145" rx="12" class="node"/>
-  <text x="145" y="1332" text-anchor="middle" class="heading">运行期间的托盘功能</text>
-  <text x="145" y="1360" text-anchor="middle" class="small">打开 Dashboard / 配置目录</text>
-  <text x="145" y="1384" text-anchor="middle" class="small">切换开机启动或控制台显隐</text>
-  <text x="145" y="1408" text-anchor="middle" class="small">切换隐藏偏好并更新标记文件</text>
-  <path d="M300 1358 H270" class="arrow"/>
-  <path d="M270 1358 H285 V1450 H580 V1423" class="arrow"/>
-
-  <rect x="900" y="1285" width="235" height="155" rx="12" class="error"/>
-  <text x="1017" y="1317" text-anchor="middle" class="heading">Mihomo 读取配置失败</text>
-  <text x="1017" y="1345" text-anchor="middle" class="small">进程自行退出，启动器检测到</text>
-  <text x="1017" y="1369" text-anchor="middle" class="small">启动器不会读取退出码或额外</text>
-  <text x="1017" y="1393" text-anchor="middle" class="small">显示配置错误；仍执行退出清理</text>
-  <path d="M860 1358 H900" class="error-arrow"/>
-  <path d="M1017 1440 V1460 H860" class="error-arrow"/>
-
-  <text x="580" y="1760" text-anchor="middle" class="small">如果 Mihomo 在启动器显示通知前就已退出，通知仍可能短暂出现；其退出码不会被启动器报告。</text>
-  <text x="580" y="1784" text-anchor="middle" class="small">早期失败发生在代理设置之前时，只释放已取得的互斥锁，不执行代理回滚。</text>
+  <rect width="800" height="1000" fill="#fff"></rect>
+  <rect x="275" y="40" width="250" height="48" rx="24" class="terminal"></rect>
+  <text x="400" y="70" text-anchor="middle" class="terminal-text" style="white-space: pre; font-size: 15px;">Launch SlimClash</text>
+  <rect x="200" y="112" width="400" height="78" rx="10" class="node setup"></rect>
+  <text x="400" y="140" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">1. Prepare paths and preferences</text>
+  <text x="400" y="164" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Resolve clash.exe, config.yaml, and tray visibility marker</text>
+  <rect x="200" y="214" width="400" height="94" rx="10" class="node setup"></rect>
+  <text x="400" y="242" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">2. Ensure a single instance</text>
+  <text x="400" y="266" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Acquire a path-specific mutex; restore a hidden instance</text>
+  <text x="400" y="288" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">or replace matching launcher and proxy processes</text>
+  <rect x="200" y="332" width="400" height="86" rx="10" class="node setup"></rect>
+  <text x="400" y="360" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">3. Read proxy configuration</text>
+  <text x="400" y="384" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Load ports, controller address, and API secret</text>
+  <text x="400" y="406" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Build the Dashboard URL; prefer mixed-port for system proxy</text>
+  <rect x="200" y="442" width="400" height="88" rx="10" class="node proxy"></rect>
+  <text x="400" y="470" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">4. Configure Windows proxy</text>
+  <text x="400" y="494" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Set user proxy and http_proxy / https_proxy environment variables</text>
+  <text x="400" y="516" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Broadcast settings changes</text>
+  <rect x="200" y="554" width="400" height="88" rx="10" class="node run"></rect>
+  <text x="400" y="582" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">5. Start tray window and Mihomo</text>
+  <text x="400" y="606" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Launch clash.exe -d ".clash" and add the tray icon</text>
+  <text x="400" y="628" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Show startup notification with configured ports</text>
+  <rect x="200" y="666" width="400" height="112" rx="10" class="node run"></rect>
+  <text x="400" y="694" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">6. Run message and process loop</text>
+  <text x="400" y="718" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Handle tray actions and wait for Mihomo to exit</text>
+  <text x="400" y="740" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Switch mode, reload config, open Dashboard or config folder</text>
+  <text x="400" y="762" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">User exit or proxy exit leads to cleanup</text>
+  <rect x="200" y="802" width="400" height="86" rx="10" class="node cleanup"></rect>
+  <text x="400" y="830" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">7. Clean up</text>
+  <text x="400" y="854" text-anchor="middle" class="body" style="white-space: pre; font-size: 13px;">Remove tray icon, stop Mihomo, restore proxy settings</text>
+  <text x="400" y="876" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Release mutex and exit</text>
+  <rect x="275" y="912" width="250" height="48" rx="24" class="terminal"></rect>
+  <text x="400" y="942" text-anchor="middle" class="terminal-text" style="white-space: pre; font-size: 15px;">Exit</text>
+  <rect x="15" y="347" width="155" height="74" rx="9" class="node error"></rect>
+  <text x="92" y="372" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">Early failure</text>
+  <text x="92" y="394" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Show error; release</text>
+  <text x="92" y="411" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">acquired mutex</text>
+  <rect x="630" y="560" width="155" height="74" rx="9" class="node error"></rect>
+  <text x="707" y="585" text-anchor="middle" class="heading" style="white-space: pre; font-size: 16px;">Launch failure</text>
+  <text x="707" y="607" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">Show error and run</text>
+  <text x="707" y="624" text-anchor="middle" class="small" style="white-space: pre; font-size: 12px;">cleanup</text>
+  <path d="M 400 88 L 400 112 M 400 190 L 400 214 M 400 308 L 400 332 M 400 418 L 400 442 M 400 530 L 400 554 M 400 642 L 400 666 M 400 778 L 400 802 M 400 888 L 400 912" class="arrow"></path>
+  <path d="M 200 374 L 170 374" class="error-arrow"></path>
+  <path d="M 92 421 L 92 936 L 275 936" class="error-arrow"></path>
+  <path d="M 600 598 L 630 598" class="error-arrow"></path>
+  <path d="M 707 634 L 707 845 L 600 845" class="error-arrow"></path>
 </svg>
